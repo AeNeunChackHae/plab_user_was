@@ -42,15 +42,32 @@ export async function signup(req, res, next) {
 
 // 로그인
 export async function login(req, res, next) {
-    const { username, password } = req.body
-    const user = await authRepository.findByUsername(username)
+    const { email, login_password } = req.body
+    const user = await authRepository.findByEmail(email)
     if(!user){
-        res.status(401).json(`${username} 아이디를 찾을 수 없음`)
+        res.status(401).json(`${email} 아이디를 찾을 수 없음`)
     }
-    const isValidPassword = await bcrypt.compare(password, user.password)
+    const isValidPassword = await bcrypt.compare(login_password, user.login_password)
     if(!isValidPassword){
         return res.status(401).json({message: `아이디 또는 비밀번호를 확인하세요`})
     }
     const token = await createJwtToken(user.id)
-    res.status(201).json({token, username})
+    res.status(201).json({token, email})
+}
+
+// 토큰 인증
+export async function verify(req, res, next) {
+    const token = req.header['Token']
+    if(token){
+        res.status(200).json(token)
+    }
+}
+
+// 로그인(토큰) 유지
+export async function me(req, res, next) {
+    const user = await authRepository.findById(req.email)
+    if(!user){
+        return res.status(404).json({message:`일치하는 사용자가 없음`})
+    }
+    res.status(200).json({token: req.token, email: user.email})
 }
