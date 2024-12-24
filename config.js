@@ -105,5 +105,11 @@ export const config = {
     account: getEnvValue("ADMIN_ACCOUNT"),
     password: getEnvValue("ADMIN_PASSWORD"),
   },
-  jwtSecret: getEnvValue("JWT_SECRET")
+  jwt: {
+    secretKey: getEnvValue('JWT_SECRET'),
+    expiresInSec: parseInt(getEnvValue('JWT_EXPIRES_SEC', 259200))
+  },
+  bcrypt: {
+    saltRounds: parseInt(getEnvValue('BCRYPT_SALT_ROUNDS'))
+  }  
 };
