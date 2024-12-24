@@ -48,6 +48,6 @@ router.post('/signup', validateSignup ,authController.signup)
 router.post('/login', validateLogin, authController.login)
 
 // 로그인 유지
-// router.get('/me', isAuth, authController.me)
+router.get('/me', isAuth, authController.me)
 
 export default router
