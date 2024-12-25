@@ -111,5 +111,12 @@ export const config = {
   },
   bcrypt: {
     saltRounds: parseInt(getEnvValue('BCRYPT_SALT_ROUNDS'))
-  }  
+  },
+  hosting_port: {
+    admin_full: parseInt(getEnvValue("ADMIN_FULL")),
+    user_front: parseInt(getEnvValue("USER_FRONT")),
+    user_back: parseInt(getEnvValue("USER_BACK")),
+    manager_front: parseInt(getEnvValue("MANAGER_FRONT")),
+    manager_back: parseInt(getEnvValue("MANAGER_BACK")),
+  }
 };
