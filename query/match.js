@@ -1,3 +1,3 @@
 export const matchQuery ={
-    selectstadiumByPhotopath : 'SELECT * FROM PFB_STADIUM WHERE photo_path=?'
+    selectstadiumByPhotopath : 'SELECT photo_path FROM stadium_photos WHERE stadium_id = ?'
 }

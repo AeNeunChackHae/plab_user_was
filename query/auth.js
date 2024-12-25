@@ -1,4 +1,3 @@
-
 export const authQuery ={
     selectUserByEmail: 'SELECT * FROM PFB_USER WHERE email=?',
     selectUserByphone: 'SELECT * FROM PFB_USER WHERE phone_number=?',
