@@ -25,12 +25,12 @@ export async function signup(req, res, next) {
         }
     
         if (login_password !== login_password_confirm) {
-            return res.status(400).send("비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+            return res.status(400).send({message: "비밀번호와 비밀번호 확인이 일치하지 않습니다."})
         }
     
         const birth_date = `${year}-${month}-${day}`
     
-        const hashed = bcrypt.hashSync(login_password, config.bcrypt.saltRounds)
+        const hashed = await bcrypt.hash(login_password, config.bcrypt.saltRounds)
         const users = await authRepository.createUser({phone_number, email, login_password: hashed, username, gender, birth_date})
         const token = await createJwtToken(users.id)
         res.status(201).json({token, email})
@@ -39,20 +39,19 @@ export async function signup(req, res, next) {
     }
 }
 
-
 // 로그인
 export async function login(req, res, next) {
     const { email, login_password } = req.body
     const user = await authRepository.findByEmail(email)
     if(!user){
-        res.status(401).json(`${email} 아이디를 찾을 수 없음`)
+        res.status(401).json({message:`아이디 이메일을 찾을 수 없음`})
     }
     const isValidPassword = await bcrypt.compare(login_password, user.login_password)
     if(!isValidPassword){
         return res.status(401).json({message: `아이디 또는 비밀번호를 확인하세요`})
     }
     const token = await createJwtToken(user.id)
-    res.status(201).json({token, email})
+    res.status(201).json({token, id: user.id})
 }
 
 // 토큰 인증
@@ -65,9 +64,9 @@ export async function verify(req, res, next) {
 
 // 로그인(토큰) 유지
 export async function me(req, res, next) {
-    const user = await authRepository.findById(req.email)
+    const user = await authRepository.findById(req.userId)
     if(!user){
         return res.status(404).json({message:`일치하는 사용자가 없음`})
     }
-    res.status(200).json({token: req.token, email: user.email})
+    res.status(200).json({token: req.token, id: user.id})
 }
