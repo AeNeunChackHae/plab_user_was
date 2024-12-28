@@ -3,6 +3,9 @@ import * as matchController from '../controller/match.js';
 
 const router = express.Router();
 
-router.get('/stadiumPhoto', matchController.photoPath);
+router.post('/', matchController.matchDetails)
+router.post('/details', matchController.getMatchDetails)
+router.post('/points', matchController.matchPoints)
+
 
 export default router;

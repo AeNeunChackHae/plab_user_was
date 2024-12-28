@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { config } from "./config.js";
 import authRouter from "./router/auth.js";
 import matchRouter from "./router/match.js";
+import stadiumRouter from "./router/stadium.js"
 import mypageRouter from "./router/mypage.js";
 import cors from "cors";
 
@@ -29,6 +30,7 @@ const port = config.hosting_port.user_back || 8080; // 환경 변수에서 PORT 
 // 테스트용 라우트
 app.use("/auth", authRouter);
 app.use("/match", matchRouter);
+app.use("/stadium", stadiumRouter)
 app.use("/mypage", mypageRouter);
 app.use("/mypage/change/profile", mypageRouter);
 
