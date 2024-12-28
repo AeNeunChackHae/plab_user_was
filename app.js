@@ -7,6 +7,7 @@ import authRouter from "./router/auth.js";
 import matchRouter from "./router/match.js";
 import stadiumRouter from "./router/stadium.js"
 import mypageRouter from "./router/mypage.js";
+import exploreRouter from "./router/explore.js";
 import cors from "cors";
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use("/match", matchRouter);
 app.use("/stadium", stadiumRouter)
 app.use("/mypage", mypageRouter);
 app.use("/mypage/change/profile", mypageRouter);
+app.use("/explore", exploreRouter);
 
 // 서버 시작
 app.listen(port, () => {
