@@ -26,6 +26,7 @@ app.use(
   })
 );
 
+
 const port = config.hosting_port.user_back || 8080; // 환경 변수에서 PORT 가져오기
 
 // 테스트용 라우트
