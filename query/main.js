@@ -7,9 +7,12 @@ export const matchQuery = {
             M.allow_gender,
             M.level_criterion,
             M.status_code,
-            S.main_region
+            S.main_region,
+            COUNT(MU.id) AS applicant_count
         FROM 
             PFB_MATCH AS M
+        LEFT JOIN 
+            PFB_MATCH_USER AS MU ON M.id = MU.match_id AND MU.status_code = 0
         JOIN 
             PFB_STADIUM AS S ON M.stadium_id = S.id
         WHERE 
@@ -20,6 +23,8 @@ export const matchQuery = {
             {regionCondition}
             {genderCondition}
             {levelCondition}
+        GROUP BY 
+            M.id
         ORDER BY 
             M.match_start_time ASC;
     `,
