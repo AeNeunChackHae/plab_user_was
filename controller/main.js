@@ -4,33 +4,36 @@ import { getFilteredMatches, getFilterOptions } from '../data/main.js';
 export async function showFilteredMatches(req, res) {
     try {
         let { date, region, gender, level, matchId } = req.body;
-        console.log('Received filters:', { date, region, gender, level, matchId }); // matchId 포함하여 로그 출력
+        console.log('Received filters:', { date, region, gender, level, matchId });
 
         // 필터 값 변환
         region = Array.isArray(region) ? region.map(Number) : [];
         gender = Array.isArray(gender) ? gender.map(Number) : [];
         level = Array.isArray(level) ? level.map(Number) : [];
-        matchId = matchId ? Number(matchId) : null; // matchId를 숫자로 변환
-
-        // matchId가 있을 경우 해당 matchId에 대한 매치만 필터링
-        if (matchId) {
-            console.log(`MatchId Filter Applied: ${matchId}`); // matchId 별도 로그 출력
-        }
+        matchId = matchId ? Number(matchId) : null;
 
         const matches = await getFilteredMatches(date, region, gender, level);
         const filters = await getFilterOptions();
 
-        const formattedMatches = matches.map(match => ({
-            matchId: match.matchId, // matchId 포함
-            startTime: match.match_start_time,
-            stadiumName: match.stadium_name,
-            gender: match.allow_gender === 0 ? '남자' : match.allow_gender === 1 ? '여자' : '남녀 모두',
-            level: match.level_criterion === 0 ? '모든 레벨' :
-                   match.level_criterion === 1 ? '아마추어1 이하' : '아마추어2 이상',
-            status: match.status_code === 0 ? '미달' : '마감'
-        }));
+        const formattedMatches = matches.map(match => {
+            let status = '신청 가능'; // 기본값
 
-        // 디버깅용 로그
+            // 신청 인원이 16명 이상일 경우 마감
+            if (match.applicant_count >= 16) {
+                status = '마감';
+            }
+
+            return {
+                matchId: match.matchId,
+                startTime: match.match_start_time,
+                stadiumName: match.stadium_name,
+                gender: match.allow_gender === 0 ? '남자' : match.allow_gender === 1 ? '여자' : '남녀 모두',
+                level: match.level_criterion === 0 ? '모든 레벨' :
+                       match.level_criterion === 1 ? '아마추어1 이하' : '아마추어2 이상',
+                status: status // 신청 가능 / 마감
+            };
+        });
+
         console.log('Formatted Matches:', formattedMatches);
 
         res.json({
