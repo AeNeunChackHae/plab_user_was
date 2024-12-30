@@ -13,7 +13,7 @@ export async function findByPhone(phone_number) {
         .then((result) => result[0][0])
 }
 
-// 회원가입
+// 회원 가입
 export async function createUser(user) {
     const {phone_number, email, login_password, username, gender, birth_date} = user
     return db.execute(authQuery.insertUser , [phone_number, email, login_password, username, gender, birth_date])
