@@ -29,8 +29,9 @@ export const getMatchesByType = async (matchCode, res) => {
             address: match.full_address,
             region: `${match.main_region}, ${match.sub_region}`,
             level: match.level_criterion === 1 ? '아마추어1 이하' : '아마추어2 이상',
-            gender: match.allow_gender === 1 ? '여성' : match.allow_gender === 2 ? '남녀 모두' : '남성',
-            status: match.status_code === 1 || match.status_code === 2 ? '신청 가능' : '마감',
+            gender: match.allow_gender === 1 ? '여자' : match.allow_gender === 2 ? '남녀 모두' : '남자',
+            status: match.applicant_count >= 18 ? '마감' : '신청 가능', // 신청 인원 수로 상태 결정
+            applicantCount: match.applicant_count || 0, // 신청 인원 수 (기본값 0)
             type: '소셜 매치',
         }));
 
