@@ -11,21 +11,26 @@ export const matchQuery ={
       WHERE 
         id = ?
     `,
-    joinMatchAndStadium :
-    `
+    joinMatchAndStadium: `
       SELECT 
           m.match_start_time, 
           m.match_type, 
           m.stadium_id, 
           s.full_address,
-          s.stadium_name
+          s.stadium_name,
+          COUNT(mu.user_id) AS current_participants -- 신청 완료된 사용자 수 계산
       FROM 
           PFB_MATCH m
       JOIN 
           PFB_STADIUM s ON m.stadium_id = s.id
+      LEFT JOIN 
+          PFB_MATCH_USER mu ON m.id = mu.match_id AND mu.status_code = 0 -- 신청 완료된 사용자만 조인
       WHERE 
-          m.id = ?;
+          m.id = ?
+      GROUP BY 
+          m.id; -- 매치별로 그룹화
     `,
+
     joinMatchAndManager: 
     `
       SELECT 
@@ -113,8 +118,25 @@ export const matchQuery ={
       WHERE 
           mt.match_id = ?;
 
-    `
-
+    `,
+    insertSocialMatchParticipant: `
+      INSERT INTO PFB_MATCH_USER (match_id, user_id, status_code)
+      VALUES (?, ?, 0);
+    `,
+    checkBlacklistInMatch: `
+      SELECT COUNT(*) as count
+      FROM PFB_MATCH_USER AS m
+      INNER JOIN PFB_BLACK AS b
+      ON m.user_id = b.black_user_id
+      WHERE m.match_id = ? AND b.user_id = ?
+    `,
+    checkTeamLeaderFromMatch: `
+      SELECT COUNT(*) as count
+      FROM PFB_MATCH_TEAM AS mt
+      INNER JOIN PFB_TEAM AS t
+      ON mt.team_id = t.id
+      WHERE mt.match_id = ? AND t.leader_id = ?
+    `,
 }
 
 

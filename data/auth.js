@@ -19,3 +19,8 @@ export async function createUser(user) {
     return db.execute(authQuery.insertUser , [phone_number, email, login_password, username, gender, birth_date])
         .then((result) => result[0].insertId)
 }
+
+export async function findById(id) {
+    return db.execute(authQuery.selectUserById, [id])
+        .then((result) => result[0][0]);
+}

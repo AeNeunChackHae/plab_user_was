@@ -4,13 +4,14 @@ import { config } from "../config.js";
 
 export const isAuth = async (req, res, next) => {
   const authHeader = req.get("Authorization");
-  console.log(authHeader);
+  console.log('헤더받아온값',authHeader);
 
   if (!(authHeader && authHeader.startsWith("Bearer "))) {
     console.log("헤더 에러");
     return res.status(401).json({ message: "유효하지 않은 인증 정보입니다." });
   }
   const token = authHeader.split(" ")[1];
+  console.log("토큰 받아서 저장한 값",token)
 
   jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
     if (error) {
