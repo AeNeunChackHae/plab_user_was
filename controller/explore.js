@@ -21,7 +21,16 @@ export const getMatchesByType = async (matchCode, res) => {
             });
         }
 
-        const formattedMatches = matches.map((match) => ({
+        // 현재 시간 이후의 매치만 필터링
+        const now = new Date();
+        const filteredMatches = matches.filter((match) => {
+            const matchStartTime = new Date(match.match_start_time);
+            return matchStartTime > now;
+        });
+
+        console.log('[DEBUG] Filtered Matches (After Current Time):', filteredMatches);
+
+        const formattedMatches = filteredMatches.map((match) => ({
             id: match.id,
             startTime: match.match_start_time,
             endTime: match.match_end_time,

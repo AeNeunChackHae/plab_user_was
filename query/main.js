@@ -16,7 +16,7 @@ export const matchQuery = {
         JOIN 
             PFB_STADIUM AS S ON M.stadium_id = S.id
         WHERE 
-            M.match_start_time >= NOW()
+            M.match_start_time > NOW()
             AND M.match_start_time <= DATE_ADD(NOW(), INTERVAL 14 DAY)
             AND M.match_type = 0
             {dateCondition}
