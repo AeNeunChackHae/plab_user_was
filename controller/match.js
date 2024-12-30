@@ -33,15 +33,18 @@ export async function getMatchDetails(req, res) {
 
   try {
     const matchDetails = await matchData.findDetailsById(match_id);
+
     if (!matchDetails) {
       return res.status(404).json({ message: "매치 정보를 찾을 수 없습니다." });
     }
+
     res.status(200).json(matchDetails);
   } catch (err) {
     console.error("매치 세부 정보 처리 중 오류:", err);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 }
+
 
 
 export async function matchPoints(req, res) {
@@ -188,4 +191,55 @@ export async function matchLevelStats(req, res) {
   }
 }
 
+export async function applyForMatch(req, res) {
+  const { match_id, user_id } = req.body;
 
+  if (!match_id || !user_id) {
+    return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
+  }
+
+  try {
+    await matchData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
+    res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+  } catch (err) {
+    console.error("매치 신청 중 오류:", err);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+}
+
+
+export async function blacklistCheck(req, res) {
+  const { match_id, user_id } = req.body;
+
+  if (!match_id || !user_id) {
+    return res.status(400).json({ message: "매치 ID와 사용자 ID가 필요합니다." });
+  }
+
+  try {
+    // 매치에 블랙리스트 사용자가 있는지 확인
+    const isBlacklisted = await matchData.checkBlacklistInMatch(match_id, user_id);
+    res.status(200).json({ isBlacklisted });
+  } catch (error) {
+    console.error("블랙리스트 확인 오류:", error);
+    res.status(500).json({ message: "블랙리스트 확인 중 오류 발생" });
+  }
+}
+
+// 팀장 여부 확인
+export async function teamCheck(req, res) {
+  const { match_id, user_id } = req.body;
+
+  if (!match_id || !user_id) {
+    return res.status(400).json({ message: "매치 ID와 사용자 ID가 필요합니다." });
+  }
+
+  try {
+    // PFB_MATCH_TEAM과 PFB_TEAM을 통해 팀장 여부 확인
+    const isTeamLeader = await matchData.checkTeamLeaderFromMatch(match_id, user_id);
+
+    res.status(200).json({ isTeamLeader });
+  } catch (error) {
+    console.error("팀장 확인 오류:", error);
+    res.status(500).json({ message: "팀장 확인 중 오류 발생" });
+  }
+}

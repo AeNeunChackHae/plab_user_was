@@ -1,8 +1,9 @@
 export const authQuery = {
-  selectUserByEmail: "SELECT * FROM PFB_USER WHERE email=?",
-  selectUserByphone: "SELECT * FROM PFB_USER WHERE phone_number=?",
-  insertUser:
+    selectUserByEmail: "SELECT * FROM PFB_USER WHERE email=?",
+    selectUserByphone: "SELECT * FROM PFB_USER WHERE phone_number=?",
+    insertUser:
     "INSERT INTO PFB_USER (phone_number, email, login_password, username, gender, birth_date) VALUES (?, ?, ?, ?, ?, ?)",
+    selectUserById: "SELECT * FROM PFB_USER WHERE id=?"
 };
 
 /*
