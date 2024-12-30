@@ -30,7 +30,7 @@ export const modifyBirthdate = async (req, res) => {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
     }
   } catch (error) {
-    console.error("생일 업데이트에 실패했습니다다:", error);
+    console.error("생일 업데이트에 실패했습니다:", error);
     return res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 };

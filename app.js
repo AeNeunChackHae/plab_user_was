@@ -5,7 +5,7 @@ import { config } from "./config.js";
 import mainRouter from "./router/main.js"
 import authRouter from "./router/auth.js";
 import matchRouter from "./router/match.js";
-import stadiumRouter from "./router/stadium.js"
+import stadiumRouter from "./router/stadium.js";
 import mypageRouter from "./router/mypage.js";
 import exploreRouter from "./router/explore.js";
 import leagueRouter from "./router/league.js";
@@ -35,7 +35,7 @@ const port = config.hosting_port.user_back || 8080; // 환경 변수에서 PORT 
 app.use("/", mainRouter)
 app.use("/auth", authRouter);
 app.use("/match", matchRouter);
-app.use("/stadium", stadiumRouter)
+app.use("/stadium", stadiumRouter);
 app.use("/mypage", mypageRouter);
 app.use("/mypage/change/profile", mypageRouter);
 app.use("/explore", exploreRouter);
