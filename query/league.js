@@ -10,7 +10,7 @@ export const getLeagueDataQuery = `
     T.team_id,
     T.status_code AS team_status,
     TM.team_name,
-    TM.embulum_path AS team_logo
+    TM.emblem_path AS team_logo
   FROM 
     PFB_MATCH M
   JOIN 
@@ -39,7 +39,7 @@ export const getFilteredCompletedTeamMatchesQuery = `
     t.team_id,
     t.status_code AS team_status,
     tm.team_name,
-    tm.embulum_path AS team_logo
+    tm.emblem_path AS team_logo
   FROM PFB_MATCH m
   JOIN PFB_STADIUM s ON m.stadium_id = s.id
   LEFT JOIN PFB_MATCH_TEAM t ON m.id = t.match_id
@@ -55,7 +55,7 @@ export const getTeamRankingQuery = `
     T.id AS team_id,
     T.team_tag AS team_tag,
     T.team_name,
-    T.embulum_path AS team_logo,
+    T.emblem_path AS team_logo,
     R.matches_played,
     R.goals,
     R.points
