@@ -137,6 +137,11 @@ export const matchQuery ={
       ON mt.team_id = t.id
       WHERE mt.match_id = ? AND t.leader_id = ?
     `,
+    applicationCheck: `
+      SELECT 1
+      FROM PFB_MATCH_USER
+      WHERE match_id = ? AND user_id = ? AND status_code = 0;
+    `,
     
 }
 

@@ -9,9 +9,7 @@ export const stadiumQuery ={
       shower_yn,
       sell_drink_yn,
       lend_shoes_yn,
-      toilet_yn,
-      lend_vest_yn,
-      lend_ball_yn
+      toilet_yn
     FROM PFB_STADIUM 
     WHERE id = ?`,
     findMatchesByStadiumId: `
