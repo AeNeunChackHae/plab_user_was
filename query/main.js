@@ -6,7 +6,6 @@ export const matchQuery = {
             M.match_start_time,
             M.allow_gender,
             M.level_criterion,
-            M.status_code,
             S.main_region,
             COUNT(MU.id) AS applicant_count
         FROM 

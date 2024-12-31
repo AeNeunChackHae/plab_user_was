@@ -23,6 +23,7 @@ export const config = {
     bucket_region: getEnvValue("AWS_BUCKET_REGION"),
     access_key: getEnvValue("AWS_ACCESS_KEY"),
     secret_key: getEnvValue("AWS_SECRET_KEY"),
+    bucket_directory: getEnvValue("AWS_BUCKET_DIRECTORY"),
   },
   mypage: {
     play_style_code: getEnvValue("PLAY_STYLE_CODE"),
@@ -65,8 +66,6 @@ export const config = {
     ground_type_code: getEnvValue("GROUND_TYPE_CODE"),
     match_gender_type_code: getEnvValue("MATCH_GENDER_TYPE_CODE"),
     match_level_limit_code: getEnvValue("MATCH_LEVEL_LIMIT_CODE"),
-    match_player_count_code: getEnvValue("MATCH_PLAYER_COUNT_CODE"),
-    stud_usage_code: getEnvValue("STUD_USAGE_CODE"),
     applicant_status_code: getEnvValue("APPLICANT_STATUS_CODE"),
     match_type_code: getEnvValue("MATCH_TYPE_CODE"),
     match_team_type_code: getEnvValue("MATCH_TEAM_TYPE_CODE"),
@@ -74,9 +73,10 @@ export const config = {
     match_reservation_status_code: getEnvValue("MATCH_RESERVATION_STATUS_CODE"),
     positive_feedback_code: getEnvValue("POSITIVE_FEEDBACK_CODE"),
     negative_feedback_code: getEnvValue("NEGATIVE_FEEDBACK_CODE"),
+    stadium_table_columns: getEnvValue("STADIUM_TABLE_COLUMNS"),
   },
   region: {
-    region_main_category_code: getEnvValue("REGION_MAIN_CATEGORY_CODE"),
+    main_region_code: getEnvValue("MAIN_REGION_CODE"),
     region_jeju_code: getEnvValue("REGION_JEJU_CODE"),
     region_gyeongnam_code: getEnvValue("REGION_GYEONGNAM_CODE"),
     region_gyeongbuk_code: getEnvValue("REGION_GYEONGBUK_CODE"),
@@ -106,11 +106,11 @@ export const config = {
     password: getEnvValue("ADMIN_PASSWORD"),
   },
   jwt: {
-    secretKey: getEnvValue('JWT_SECRET'),
-    expiresInSec: parseInt(getEnvValue('JWT_EXPIRES_SEC', 259200))
+    secretKey: getEnvValue("JWT_SECRET"),
+    expiresInSec: parseInt(getEnvValue("JWT_EXPIRES_SEC", 259200)),
   },
   bcrypt: {
-    saltRounds: parseInt(getEnvValue('BCRYPT_SALT_ROUNDS'))
+    saltRounds: parseInt(getEnvValue("BCRYPT_SALT_ROUNDS")),
   },
   hosting_port: {
     admin_full: parseInt(getEnvValue("ADMIN_FULL")),
@@ -118,5 +118,9 @@ export const config = {
     user_back: parseInt(getEnvValue("USER_BACK")),
     manager_front: parseInt(getEnvValue("MANAGER_FRONT")),
     manager_back: parseInt(getEnvValue("MANAGER_BACK")),
+  },
+  fileUpload: {
+    admin_stadium_input_name: getEnvValue("ADMIN_STADIUM_REGIST"),
+    was_upload_directory: getEnvValue("WAS_UPLOAD_DIRECTORY"),
   }
 };
