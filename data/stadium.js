@@ -54,12 +54,19 @@ export async function findStadiumById(stadium_id) {
       }
   
       const stadium = rows[0];
-  
+      // console.log("stadium.main_region:", stadium.main_region, typeof stadium.main_region);
+      // console.log("config.region.main_region_code:", config.region.main_region_code);
+      // console.log('config.region.main_region_code',config.region.main_region_code)
+      // console.log('config.region.main_region_code[stadium.main_region] ',config.region.main_region_code[stadium.main_region] )
+      
       // main_region 및 sub_region 매핑
       const mainRegionName =
-        config.region.region_main_category_code[stadium.main_region] || "알 수 없음";
+        config.region.main_region_code[stadium.main_region] || "알 수 없음";
       const subRegionName =
         config.region.region_seoul_code[stadium.sub_region] || "알 수 없음";
+
+      // console.log('mainRegionName:',mainRegionName)
+      // console.log('subRegionName:',subRegionName)
   
       return {
         ...stadium,
@@ -70,9 +77,9 @@ export async function findStadiumById(stadium_id) {
   }
 
   export async function findStadiumMatchDetails(stadiumId) {
-    // console.log("데이터 찾기 시작 - stadiumId:", stadiumId);
-    // console.log("Gender Config:", config.stadium_match.match_gender_type_code);
-    // console.log("Level Config:", config.stadium_match.match_level_limit_code);
+    console.log("데이터 찾기 시작 - stadiumId:", stadiumId);
+    console.log("Gender Config:", config.stadium_match.match_gender_type_code);
+    console.log("Level Config:", config.stadium_match.match_level_limit_code);
 
     return db.execute(stadiumQuery.findStadiumMatchDetails, [stadiumId])
       .then(([rows]) => {

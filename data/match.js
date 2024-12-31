@@ -79,7 +79,7 @@ export async function addSocialMatchParticipant(match_id, user_id) {
   }
 
 
-  export async function checkBlacklistInMatch(match_id, user_id) {
+export async function checkBlacklistInMatch(match_id, user_id) {
     try {
       const [result] = await db.execute(matchQuery.checkBlacklistInMatch, [match_id, user_id]);
       return result[0].count > 0; // 블랙리스트 여부 반환
@@ -90,7 +90,7 @@ export async function addSocialMatchParticipant(match_id, user_id) {
   }
   
   // 팀장 여부 확인
-  export async function checkTeamLeaderFromMatch(match_id, user_id) {
+export async function checkTeamLeaderFromMatch(match_id, user_id) {
     try {
       const [result] = await db.execute(matchQuery.checkTeamLeaderFromMatch, [match_id, user_id]);
       return result[0].count > 0; // 팀장 여부 반환
@@ -98,4 +98,9 @@ export async function addSocialMatchParticipant(match_id, user_id) {
       console.error("DB 팀장 확인 오류:", error);
       throw error;
     }
+  }
+
+export async function checkApplicationStatus(match_id, user_id) {
+    const [rows] = await db.execute(matchQuery.applicationCheck, [match_id, user_id]);
+    return rows.length > 0;
   }

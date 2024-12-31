@@ -243,3 +243,19 @@ export async function teamCheck(req, res) {
     res.status(500).json({ message: "팀장 확인 중 오류 발생" });
   }
 }
+
+export async function checkApplicationStatusHandler(req, res) {
+  const { match_id, user_id } = req.body;
+
+  if (!match_id || !user_id) {
+    return res.status(400).json({ message: "match_id와 user_id는 필수입니다." });
+  }
+
+  try {
+    const isApplied = await matchData.checkApplicationStatus(match_id, user_id);
+    res.status(200).json({ isApplied });
+  } catch (error) {
+    console.error("신청 상태 확인 오류:", error);
+    res.status(500).json({ message: "신청 상태 확인 중 오류 발생" });
+  }
+}

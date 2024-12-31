@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+console.log("MAIN_REGION_CODE from env:", process.env.MAIN_REGION_CODE);
 function getEnvValue(key) {
   let value = process.env[key];
   if (value && value.startsWith("[")) {
@@ -76,7 +77,7 @@ export const config = {
     stadium_table_columns: getEnvValue("STADIUM_TABLE_COLUMNS"),
   },
   region: {
-    main_region_code: getEnvValue("MAIN_REGION_CODE"),
+    main_region_code: getEnvValue("REGION_MAIN_CATEGORY_CODE"),
     region_jeju_code: getEnvValue("REGION_JEJU_CODE"),
     region_gyeongnam_code: getEnvValue("REGION_GYEONGNAM_CODE"),
     region_gyeongbuk_code: getEnvValue("REGION_GYEONGBUK_CODE"),
