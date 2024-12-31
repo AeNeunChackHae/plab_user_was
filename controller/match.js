@@ -243,3 +243,4 @@ export async function teamCheck(req, res) {
     res.status(500).json({ message: "팀장 확인 중 오류 발생" });
   }
 }
+

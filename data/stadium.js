@@ -57,7 +57,7 @@ export async function findStadiumById(stadium_id) {
   
       // main_region 및 sub_region 매핑
       const mainRegionName =
-        config.region.region_main_category_code[stadium.main_region] || "알 수 없음";
+        config.region.main_region_code[stadium.main_region] || "알 수 없음";
       const subRegionName =
         config.region.region_seoul_code[stadium.sub_region] || "알 수 없음";
   

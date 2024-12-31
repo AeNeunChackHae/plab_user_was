@@ -75,7 +75,7 @@ export const matchQuery ={
     `,
     getTeamDataByMatchId : `
       SELECT 
-        t.embulum_path,
+        t.emblem_path,
         t.team_name,
         COUNT(tm.user_id) AS members_count,
         ROUND(AVG(YEAR(CURDATE()) - YEAR(u.birth_date)), 1) AS average_age,
@@ -107,7 +107,7 @@ export const matchQuery ={
       SELECT 
           t.id AS team_id,
           t.team_name,
-          t.embulum_path,
+          t.emblem_path,
           m.match_start_time
       FROM 
           PFB_MATCH_TEAM mt
@@ -137,6 +137,7 @@ export const matchQuery ={
       ON mt.team_id = t.id
       WHERE mt.match_id = ? AND t.leader_id = ?
     `,
+    
 }
 
 
