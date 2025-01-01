@@ -11,8 +11,8 @@ export const cardQuery = {
       PFB_MATCH.allow_gender, 
       PFB_MATCH.level_criterion 
     FROM
-      PFB_CARD INNER 
-    JOIN 
+      PFB_CARD  
+    INNER JOIN 
       PFB_MATCH ON PFB_CARD.match_id = PFB_MATCH.id 
     WHERE
       PFB_CARD.user_id = ? `,
