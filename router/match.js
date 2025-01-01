@@ -15,6 +15,8 @@ router.post('/details', matchController.getMatchDetails)
 router.post("/blacklist-check", matchController.blacklistCheck);
 router.post("/team-check", matchController.teamCheck);
 router.post('/application-check', matchController.checkApplicationStatusHandler);
+router.post("/apply", matchController.applyForMatch);
+
 
 
 

@@ -191,21 +191,21 @@ export async function matchLevelStats(req, res) {
   }
 }
 
-export async function applyForMatch(req, res) {
-  const { match_id, user_id } = req.body;
+// export async function applyForMatch(req, res) {
+//   const { match_id, user_id } = req.body;
 
-  if (!match_id || !user_id) {
-    return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
-  }
+//   if (!match_id || !user_id) {
+//     return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
+//   }
 
-  try {
-    await matchData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
-    res.status(201).json({ message: "매치 신청이 완료되었습니다." });
-  } catch (err) {
-    console.error("매치 신청 중 오류:", err);
-    res.status(500).json({ message: "서버 오류가 발생했습니다." });
-  }
-}
+//   try {
+//     await matchData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
+//     res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+//   } catch (err) {
+//     console.error("매치 신청 중 오류:", err);
+//     res.status(500).json({ message: "서버 오류가 발생했습니다." });
+//   }
+// }
 
 
 export async function blacklistCheck(req, res) {
@@ -257,5 +257,36 @@ export async function checkApplicationStatusHandler(req, res) {
   } catch (error) {
     console.error("신청 상태 확인 오류:", error);
     res.status(500).json({ message: "신청 상태 확인 중 오류 발생" });
+  }
+}
+
+export async function applyForMatch(req, res) {
+  const { match_id, user_id } = req.body;
+
+  if (!match_id || !user_id) {
+    return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
+  }
+
+  try {
+    // 현재 참가자 수 확인
+    const currentParticipants = await matchData.getCurrentParticipants(match_id);
+
+    if (currentParticipants >= 18) {
+      return res.status(400).json({ message: "이미 신청이 마감된 매치입니다." });
+    }
+
+    // 참가자 수가 17명인 경우 상태 업데이트
+    if (currentParticipants === 17) {
+      await matchData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
+      await matchData.updateMatchStatus(match_id); // 상태 업데이트
+      return res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+    }
+
+    // 참가자 수가 17명 미만인 경우 신청만 처리
+    await matchData.addSocialMatchParticipant(match_id, user_id);
+    res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+  } catch (err) {
+    console.error("매치 신청 중 오류:", err);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 }
