@@ -120,28 +120,28 @@ export const matchQuery ={
           mt.match_id = ?;
 
     `,
+    checkBlacklistInMatch: `
+    SELECT COUNT(*) as count
+    FROM PFB_MATCH_USER AS m
+    INNER JOIN PFB_BLACK AS b
+    ON m.user_id = b.black_user_id
+    WHERE m.match_id = ? AND b.user_id = ?
+    `,
+    checkTeamLeaderFromMatch: `
+    SELECT COUNT(*) as count
+    FROM PFB_MATCH_TEAM AS mt
+    INNER JOIN PFB_TEAM AS t
+    ON mt.team_id = t.id
+    WHERE mt.match_id = ? AND t.leader_id = ?
+    `,
+    applicationCheck: `
+    SELECT 1
+    FROM PFB_MATCH_USER
+    WHERE match_id = ? AND user_id = ? AND status_code = 0;
+    `,
     insertSocialMatchParticipant: `
       INSERT INTO PFB_MATCH_USER (match_id, user_id, status_code)
       VALUES (?, ?, 0);
-    `,
-    checkBlacklistInMatch: `
-      SELECT COUNT(*) as count
-      FROM PFB_MATCH_USER AS m
-      INNER JOIN PFB_BLACK AS b
-      ON m.user_id = b.black_user_id
-      WHERE m.match_id = ? AND b.user_id = ?
-    `,
-    checkTeamLeaderFromMatch: `
-      SELECT COUNT(*) as count
-      FROM PFB_MATCH_TEAM AS mt
-      INNER JOIN PFB_TEAM AS t
-      ON mt.team_id = t.id
-      WHERE mt.match_id = ? AND t.leader_id = ?
-    `,
-    applicationCheck: `
-      SELECT 1
-      FROM PFB_MATCH_USER
-      WHERE match_id = ? AND user_id = ? AND status_code = 0;
     `,
     countParticipants: `
       SELECT COUNT(*) AS current_participants
