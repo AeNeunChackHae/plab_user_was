@@ -15,8 +15,10 @@ export const matchQuery ={
     joinMatchAndStadium: `
       SELECT 
           m.match_start_time, 
+          m.match_end_time,
           m.match_type, 
           m.stadium_id, 
+          m.status_code,
           s.full_address,
           s.stadium_name,
           COUNT(mu.user_id) AS current_participants -- 신청 완료된 사용자 수 계산
