@@ -1,44 +1,43 @@
 export const matchQuery = {
     selectFilteredMatches: `
         SELECT 
-            M.id AS matchId,
-            S.stadium_name,
-            M.match_start_time,
-            M.allow_gender,
-            M.level_criterion,
-            S.main_region,
-            COUNT(MU.id) AS applicant_count
+            m.id AS matchId,
+            s.stadium_name,
+            DATE_FORMAT(m.match_start_time, '%Y-%m-%d %H:%i:%s') AS match_start_time,
+            m.allow_gender,
+            m.level_criterion,
+            m.status_code,
+            s.main_region
         FROM 
-            PFB_MATCH AS M
-        LEFT JOIN 
-            PFB_MATCH_USER AS MU ON M.id = MU.match_id AND MU.status_code = 0
+            PFB_MATCH AS m
         JOIN 
-            PFB_STADIUM AS S ON M.stadium_id = S.id
+            PFB_STADIUM AS s ON m.stadium_id = s.id
         WHERE 
-            M.match_start_time > NOW()
-            AND M.match_start_time <= DATE_ADD(NOW(), INTERVAL 14 DAY)
-            AND M.match_type = 0
+            m.match_start_time > NOW() -- 현재 시간 이후의 데이터만
+            AND m.match_start_time <= DATE_ADD(NOW(), INTERVAL 14 DAY) -- 14일 이내의 데이터만
+            AND m.match_type = 0 -- 소셜 매치만
+            AND m.status_code IN (0, 1) -- 모집중, 마감만
             {dateCondition}
             {regionCondition}
             {genderCondition}
             {levelCondition}
         GROUP BY 
-            M.id
+            m.id, s.stadium_name, m.match_start_time, m.allow_gender, m.level_criterion, m.status_code, s.main_region
         ORDER BY 
-            M.match_start_time ASC;
+            m.match_start_time ASC;
     `,
     
     selectFilterOptions: `
         SELECT 
-            DISTINCT S.main_region AS region,
-            M.allow_gender AS gender,
-            M.level_criterion AS level
+            DISTINCT s.main_region AS region,
+            m.allow_gender AS gender,
+            m.level_criterion AS level
         FROM 
-            PFB_MATCH AS M
+            PFB_MATCH AS m
         JOIN 
-            PFB_STADIUM AS S ON M.stadium_id = S.id
+            PFB_STADIUM AS s ON m.stadium_id = s.id
         WHERE 
-            M.match_start_time >= NOW()
-            AND M.match_start_time <= DATE_ADD(NOW(), INTERVAL 14 DAY);
+            m.match_start_time >= NOW()
+            AND m.match_start_time <= DATE_ADD(NOW(), INTERVAL 14 DAY);
     `
 };

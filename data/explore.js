@@ -1,5 +1,6 @@
 import { db } from '../mysql.js';
 import { getMatchesQuery } from '../query/explore.js';
+import { config } from '../config.js';
 
 /**
  * 매치 목록을 가져옵니다.
@@ -9,7 +10,8 @@ import { getMatchesQuery } from '../query/explore.js';
 export const fetchMatchesByType = async (matchCode) => {
     try {
         const days = matchCode === '1' ? 10 : 14;
-        console.log(`[DEBUG] SQL Query Params: days=${days}, matchCode=${matchCode}`);
+        // 디버깅 메시지
+        // console.log(`SQL 쿼리 파라미터: 기간=${days}, 매치 카테고리리 코드=${matchCode}`);
 
         const [rows] = await db.execute(getMatchesQuery, [
             days,
@@ -20,15 +22,29 @@ export const fetchMatchesByType = async (matchCode) => {
             matchCode,
         ]);
 
-        console.log('[DEBUG] SQL Query Result:', rows);
+        // console.log('SQL 쿼리 결과:', rows);
 
         if (!Array.isArray(rows)) {
-            console.warn('[WARN] SQL Query did not return an array!');
+            console.warn('SQL 쿼리가 배열을 반환하지 않았습니다');
         }
 
-        return rows;
+        const statusCodes = config.stadium_match.match_progress_status_code;
+
+        const formattedRows = rows.map((match) => {
+            // console.log(
+            //     `매치 ID: ${match.id}, 상태 코드: ${match.status_code}, 매핑된 상태: ${statusCodes[match.status_code]}`
+            // );
+            return {
+                ...match,
+                status: statusCodes[match.status_code] || '알 수 없음',
+            };
+        });
+
+        // console.log('포맷된 SQL 결과:', formattedRows);
+
+        return formattedRows;
     } catch (error) {
-        console.error('[ERROR] fetchMatchesByType:', error.message);
+        console.error('오류: fetchMatchesByType 함수에서 문제가 발생했습니다:', error.message);
         throw error;
     }
 };
