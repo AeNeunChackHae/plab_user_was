@@ -3,6 +3,7 @@ import {
   getCancelledScheduleByUser,
   getUnderCapacityCancelledSchedule,
   getCompletedMatchesByUserId,
+  cancelSocialMatchByUserId,
 } from "../data/mypage-myplab.js";
 
 /**
@@ -47,50 +48,40 @@ export async function getUserMatchSchedule(req, res) {
   }
 }
 
-// 매치 취소하는 함수
-export async function cancelMatchController(req, res) {
-  const { matchId, userId, teamId } = req.body;
+/**
+ * @desc 소셜 매치 취소
+ * @route POST /mypage/myplabcancel
+ * @access Private
+ */
+export async function cancelSocialMatch(req, res) {
+  const { matchId } = req.body;
+  const userId = req.userId; // isAuth 미들웨어에서 전달된 사용자 ID 사용
 
-  if (!matchId || !userId) {
-    return res.status(400).json({ message: "Match ID와 User ID가 필요합니다" });
+  // 디버깅 메시지
+  // console.log("[컨트롤러] 받은 userId:", userId);
+  // console.log("[컨트롤러] 받은 matchId:", matchId);
+
+  if (!userId || !matchId) {
+    console.error("userId 또는 matchId가 누락되었습니다.");
+    return res.status(400).json({ message: "userId와 matchId가 필요합니다." });
   }
 
   try {
-    // 팀 매치 여부 확인
-    const leaderId = await checkTeamMatchById({ matchId });
+    const result = await cancelSocialMatchByUserId({ userId, matchId });
+    console.log("[SQL 결과] 매치 취소 결과:", result);
 
-    if (leaderId) {
-      // 팀 매치인 경우
-      if (!teamId || leaderId !== userId) {
-        return res
-          .status(400)
-          .json({ message: "팀 매치는 팀 리더에게 문의하세요." });
-      }
-
-      // 팀 매치 취소 처리
-      const teamSuccess = await cancelTeamMatchByLeader({
-        matchId,
-        teamId,
-        leaderId,
-      });
-
-      if (!teamSuccess) {
-        return res.status(500).json({ message: "팀 매치 취소에 실패했습니다" });
-      }
-
-      return res.status(200).json({ message: "팀 매치 취소에 성공했습니다" });
+    if (result.success) {
+      console.log("매치 취소 성공:", result.message);
+      return res.status(200).json({ success: true, message: result.message });
+    } else {
+      console.warn("매치를 찾을 수 없음:", result.message);
+      return res.status(404).json({ success: false, message: result.message });
     }
-
-    // 소셜 매치 취소 처리
-    const socialSuccess = await cancelSocialMatchByUserId({ matchId, userId });
-
-    if (!socialSuccess) {
-      return res.status(500).json({ message: "매치 취소에 실패했습니다" });
-    }
-
-    return res.status(200).json({ message: "매치 취소에 성공했습니다" });
   } catch (error) {
-    console.error("매치 취소 실패:", error);
-    return res.status(500).json({ message: "서버 오류" });
+    console.error("매치 취소 중 오류:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "서버 오류로 인해 매치를 취소할 수 없습니다.",
+    });
   }
 }

@@ -1,6 +1,9 @@
 import express from "express";
-import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
 import { isAuth } from "../middleware/auth.js";
+import { getUserMatchSchedule, cancelSocialMatch } from "../controller/mypage-myplab.js";
+
+// --
+import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
 import { getMyInfo } from "../controller/mypage.js";
 import { modifyProfile } from "../controller/mypage-change-profile.js";
 import { modifyBirthdate } from "../controller/mypage-change-general.js";
@@ -13,11 +16,16 @@ import {
   getBlacklistedUsersController,
   removeUserFromBlacklistController,
 } from "../controller/mypage-blacklist.js";
-// import { getMatchScheduleController } from "../controller/mypage-myplab-matchschedule.js";
-import { getUserMatchSchedule } from "../controller/mypage-myplab.js";
-import { cancelMatchController } from "../controller/mypage-myplab.js";
 
 const router = express.Router();
+
+// 소셜 매치 일정(신청, 취소, 완료) 불러오기
+router.post("/myplab", isAuth, getUserMatchSchedule);
+
+// 소셜 매치 신청 취소
+router.post("/myplabcancel", isAuth, cancelSocialMatch);
+
+// --
 
 // 마이페이지 메인
 router.post("/", authenticateToken, getMyInfo); // 토큰 검증 후 getMyinfo 만들어서 데이터 가져오기
@@ -47,14 +55,7 @@ router.post(
 ); // 매치 리뷰 (활동량 기입 위한 매치 리스트 불러오기)
 router.post("/activity", authenticateToken, insertPhysicalActivityController); // 매치 리뷰 (활동량 기입)
 
-// 마이페이지 메인 > 마이플랩 페이지 : 매치일정, 완료된매치, 구장예약 2개 tab DB에서 데이터 불러오기
-router.post("/myplab", isAuth, getUserMatchSchedule); // 매치 일정 불러오기
-// router.post(
-//   "/myplabcompleted",
-//   authenticateToken,
-//   getCompletedMatchesControllerPlab
-// ); // 완료된 매치 일정 불러오기
-router.delete("/myplabcancel", authenticateToken, cancelMatchController); // 매치 일정 - 매치 삭제
+
 
 // 마이페이지 메인 > 블랙리스트 페이지
 router.post("/blacklist", authenticateToken, getBlacklistedUsersController); // 추가한 블랙멤버 리스트 불러오기
