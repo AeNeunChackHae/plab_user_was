@@ -32,7 +32,12 @@ export const mypageMyPlabMatchScheduleQueries = {
       s.stadium_name,
       m.match_type,
       m.allow_gender,
-      m.level_criterion
+      m.level_criterion,
+      mu.status_code AS applicant_status,
+      CASE 
+        WHEN f.id IS NOT NULL THEN 1 -- 사용자가 해당 매치에서 타인에게 피드백을 남긴 경우
+        ELSE 0 -- 사용자가 해당 매치에서 타인에게 피드백을 남기지 않은 경우
+      END AS feedback_given
     FROM 
       PFB_USER u
     JOIN 
@@ -41,9 +46,11 @@ export const mypageMyPlabMatchScheduleQueries = {
       PFB_MATCH m ON mu.match_id = m.id
     JOIN 
       PFB_STADIUM s ON m.stadium_id = s.id
+    LEFT JOIN 
+      PFB_USER_FEEDBACK f ON f.giver_id = u.id AND f.match_id = m.id
     WHERE 
       u.id = ?
-      AND mu.status_code = 0
+      AND mu.status_code IN (0, 2)
       AND m.status_code = 3;
     `,
 
@@ -88,21 +95,11 @@ export const mypageMyPlabMatchScheduleQueries = {
       AND mu.status_code = 0;
     `,
 
-  // 소셜 매치 취소
+  // 소셜 매치 신청 취소
   cancelSocialMatch: `
-    DELETE FROM 
-      PFB_MATCH_USER
-    WHERE 
-      match_id = ?
-      AND user_id = ?
-      AND EXISTS (
-        SELECT 1
-        FROM PFB_MATCH m
-        WHERE 
-          m.id = ?
-          AND m.match_type = 0 -- 소셜 매치
-          AND m.match_start_time > NOW()
-      );
+    UPDATE PFB_MATCH_USER
+    SET status_code = 1
+    WHERE user_id = ? AND match_id = ?;
     `,
 
   // 팀 매치 취소 확인 (취소 불가 메시지 처리용)
