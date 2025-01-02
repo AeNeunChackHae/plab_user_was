@@ -1,10 +1,17 @@
 import { getFilteredMatches, getFilterOptions } from '../data/main.js';
+import { config } from '../config.js';
+
+// 상태 코드 매핑
+const MATCH_PROGRESS_STATUS = config.stadium_match.match_progress_status_code;
+const MATCH_GENDER_TYPE = config.stadium_match.match_gender_type_code;
+const MATCH_LEVEL_LIMIT = config.stadium_match.match_level_limit_code;
 
 // 매치 목록 데이터 반환
 export async function showFilteredMatches(req, res) {
     try {
         let { date, region, gender, level, matchId } = req.body;
-        console.log('Received filters:', { date, region, gender, level, matchId });
+        // 디버깅 메시지
+        // console.log('요청받은 필터:', { 날짜: date, 지역: region, 성별: gender, 레벨: level, 매치ID: matchId });
 
         // 필터 값 변환
         region = Array.isArray(region) ? region.map(Number) : [];
@@ -16,55 +23,48 @@ export async function showFilteredMatches(req, res) {
         const filters = await getFilterOptions();
 
         // 현재 시간 이후의 매치만 필터링
-        const now = new Date(); // 현재 시간
+        const now = new Date();
 
         const filteredMatches = matches.filter(match => {
-            const matchTimeUTC = new Date(match.match_start_time); // UTC 시간
-            const matchTimeKST = new Date(matchTimeUTC.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
-            
+            const matchTimeKST = new Date(match.match_start_time);
             return matchTimeKST > now;
         });
 
+        // console.log('현재 시간:', now.toLocaleString('ko-KR'));
+        // console.log('필터링된 매치 개수:', filteredMatches.length);
+
+        // 상태 변환 및 데이터 포맷팅
         const formattedMatches = filteredMatches.map(match => {
-            let status = '신청 가능'; // 기본값
+            let status = MATCH_PROGRESS_STATUS[0];
 
-            // 신청 인원이 16명 이상일 경우 마감
-            if (match.applicant_count >= 16) {
-                status = '마감';
+            if (match.status_code === 0) {
+                status = MATCH_PROGRESS_STATUS[0]; // 모집중
+            } else if (match.status_code === 1) {
+                status = MATCH_PROGRESS_STATUS[1]; // 마감
             }
-
-            // KST로 시간 변환
-            const matchTimeUTC = new Date(match.match_start_time);
-            const matchTimeKST = new Date(matchTimeUTC.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
 
             return {
                 matchId: match.matchId,
-                startTime: `${matchTimeKST.getFullYear()}-${String(matchTimeKST.getMonth() + 1).padStart(2, '0')}-${String(matchTimeKST.getDate()).padStart(2, '0')} ${String(matchTimeKST.getHours()).padStart(2, '0')}:${String(matchTimeKST.getMinutes()).padStart(2, '0')}:${String(matchTimeKST.getSeconds()).padStart(2, '0')}`,
+                startTime: match.match_start_time,
                 stadiumName: match.stadium_name,
-                gender: match.allow_gender === 0 ? '남자' : match.allow_gender === 1 ? '여자' : '남녀 모두',
-                level: match.level_criterion === 0 ? '모든 레벨' :
-                       match.level_criterion === 1 ? '아마추어1 이하' : '아마추어2 이상',
+                gender: MATCH_GENDER_TYPE[match.allow_gender],
+                level: MATCH_LEVEL_LIMIT[match.level_criterion],
                 status: status
             };
         });
 
-        console.log('Filtered Matches:', formattedMatches);
+        console.log('변환된 매치 데이터:', formattedMatches);
 
         res.json({
             matches: formattedMatches,
             filters: {
                 regions: [...new Set(filters.map(filter => filter.region))],
-                genders: [...new Set(filters.map(filter => 
-                    filter.gender === 0 ? '남자' : filter.gender === 1 ? '여자' : '남녀 모두'
-                ))],
-                levels: [...new Set(filters.map(filter => 
-                    filter.level === 0 ? '모든 레벨' :
-                    filter.level === 1 ? '아마추어1 이하' : '아마추어2 이상'
-                ))]
+                genders: [...new Set(filters.map(filter => MATCH_GENDER_TYPE[filter.gender]))],
+                levels: [...new Set(filters.map(filter => MATCH_LEVEL_LIMIT[filter.level]))]
             }
         });
     } catch (error) {
-        console.error('Error in showFilteredMatches:', error);
-        res.status(500).json({ error: 'Failed to retrieve matches and filters' });
+        console.error('매치 목록 조회 중 오류 발생:', error);
+        res.status(500).json({ error: '매치 및 필터 정보를 불러오는 데 실패했습니다.' });
     }
 }
