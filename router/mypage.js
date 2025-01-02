@@ -7,8 +7,10 @@ import { modifyBirthdate } from "../controller/mypage-change-general.js";
 import { deleteUser } from "../controller/mypage-withdrawarl.js";
 import { updatePassword } from "../controller/mypage-change-pw.js";
 import { fetchCardStats } from "../controller/mypage-mylevel-card.js";
+import { fetchLevelStats } from "../controller/mypage-mylevel-level.js";
 import { getCompletedMatchesController } from "../controller/mypage-mylevel-activity.js";
 import { insertPhysicalActivityController } from "../controller/mypage-mylevel-activity.js";
+
 import {
   getBlacklistedUsersController,
   removeUserFromBlacklistController,
@@ -37,7 +39,7 @@ router.put("/change/pw", authenticateToken, updatePassword); // 패스워드 변
 router.delete("/withdrawal", authenticateToken, deleteUser); // 유저 삭제
 
 // 마이페이지 메인 > 마이레벨 페이지 : sidebar 레벨이미지경로, 받은카드, 피드백, 평균 활동량, 매치 리뷰(활동량 기입)
-// router.post("/mylevelpics", authenticateToken, mylevelpics); // 사이드바 레벨 이미지 path 받아오기
+router.post("/mylevelpics", authenticateToken, fetchLevelStats); // 사이드바 레벨 이미지 path 받아오기
 router.post("/card", authenticateToken, fetchCardStats); // 매니저에게 받은 카드 숫자 불러오기
 // router.post("/feedbackvoted", authenticateToken, getFeedbackStats); // 타 플래버 피드백 숫자 불러오기
 router.post(
