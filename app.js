@@ -10,6 +10,7 @@ import mypageRouter from "./router/mypage.js";
 import exploreRouter from "./router/explore.js";
 import leagueRouter from "./router/league.js";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
@@ -19,6 +20,10 @@ const app = express();
 app.use(express.json());
 // form에서 받은 데이터 처리
 app.use(express.urlencoded({ extended: false }));
+
+// public 폴더를 정적 파일 제공 경로로 설정
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   cors({
