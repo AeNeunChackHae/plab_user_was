@@ -7,6 +7,7 @@ export async function getBlacklistedUsersById({ id }) {
     const [result] = await db.execute(blacklistQueries.getBlacklistedUsers, [
       id,
     ]);
+    console.log("블랙:", result);
     return result.length > 0 ? result : []; // Return blacklisted users or empty array
   } catch (error) {
     console.error("Database error:", error);
