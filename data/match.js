@@ -21,6 +21,8 @@ export async function findDetailsById(match_id) {
 
       return {
         match_start_time: row.match_start_time,
+        match_end_time: row.match_end_time,
+        match_status_code: row.match_status_code,
         match_type: row.match_type,
         stadium_id: row.stadium_id,
         full_address: row.full_address,
