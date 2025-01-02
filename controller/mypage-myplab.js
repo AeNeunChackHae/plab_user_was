@@ -1,53 +1,49 @@
 import {
   getMatchScheduleByUserId,
+  getCancelledScheduleByUser,
+  getUnderCapacityCancelledSchedule,
   getCompletedMatchesByUserId,
-  cancelSocialMatchByUserId,
-  checkTeamMatchById,
-} from "../data/mypage-myplab-matchschedule.js";
+} from "../data/mypage-myplab.js";
 
-// 매치 일정 불러오는 함수 (tab1)
-export async function getMatchScheduleController(req, res) {
-  const { user_id } = req.body;
-  console.log(user_id);
+/**
+ * @desc 사용자 매치 스케줄 및 완료된 매치 데이터 불러오기
+ * @route POST /mypage/myplab
+ * @access Private
+ */
+export async function getUserMatchSchedule(req, res) {
+  const { userId } = req.body;
 
-  if (!user_id) {
-    return res.status(400).json({ message: "유저 ID가 필요합니다" });
+  if (!userId) {
+    return res.status(400).json({ message: "userId가 필요합니다." });
   }
 
   try {
-    const matchSchedule = await getMatchScheduleByUserId(user_id);
+    // Tab1 데이터 가져오기 (진행 예정, 취소된, 미달로 취소된 매치)
+    const [upcomingMatches, cancelledMatches, underCapacityCancelledMatches] = await Promise.all([
+      getMatchScheduleByUserId(userId),
+      getCancelledScheduleByUser(userId),
+      getUnderCapacityCancelledSchedule(userId),
+    ]);
 
-    if (matchSchedule.length === 0) {
-      return res.status(404).json({ message: "매치 일정이 없습니다" });
-    }
+    // Tab2 데이터 가져오기 (완료된 매치)
+    const completedMatches = await getCompletedMatchesByUserId(userId);
 
-    return res.status(200).json(matchSchedule);
+    // 결과 반환
+    return res.status(200).json({
+      upcomingSchedule: {
+        upcomingMatches,
+        cancelledMatches,
+        underCapacityCancelledMatches,
+      },
+      completedSchedule: {
+        completedMatches,
+      },
+    });
   } catch (error) {
-    console.error("매치 일정 fetch 오류:", error);
-    return res.status(500).json({ message: "서버 오류" });
-  }
-}
-
-// 완료된 매치 불러오는 함수 (tab2)
-export async function getCompletedMatchesControllerPlab(req, res) {
-  const { user_id } = req.body;
-  console.log(user_id);
-
-  if (!user_id) {
-    return res.status(400).json({ message: "유저 ID가 필요합니다" });
-  }
-
-  try {
-    const completedMatches = await getCompletedMatchesByUserId(user_id);
-
-    if (completedMatches.length === 0) {
-      return res.status(404).json({ message: "완료된 매치가 없습니다" });
-    }
-
-    return res.status(200).json(completedMatches);
-  } catch (error) {
-    console.error("완료된 매치 fetch 오류:", error);
-    return res.status(500).json({ message: "서버 오류" });
+    console.error("Error fetching match schedules:", error);
+    return res.status(500).json({
+      message: "매치 일정을 불러오는 중 오류가 발생했습니다.",
+    });
   }
 }
 
