@@ -1,4 +1,4 @@
 export const mypageQuery = {
   selectUserMypageByEmail:
-    "SELECT id, username, prefer_position, level_code FROM PFB_USER WHERE email = ?",
+    "SELECT id, email, username, prefer_position, ability, level_code FROM PFB_USER WHERE id = ?"
 };

@@ -1,44 +1,35 @@
 import { db } from "../mysql.js";
 import { blacklistQueries } from "../query/mypage-blacklist.js";
 
-// Get blacklisted users by user ID
-export async function getBlacklistedUsersById({ id }) {
+// 블랙리스트 유저 목록 불러오기
+export async function fetchBlacklist(userId) {
   try {
-    const [result] = await db.execute(blacklistQueries.getBlacklistedUsers, [
-      id,
-    ]);
-    console.log("블랙:", result);
-    return result.length > 0 ? result : []; // Return blacklisted users or empty array
+    const [rows] = await db.execute(blacklistQueries.getBlacklistedUsers, [userId]);
+    return rows;
   } catch (error) {
-    console.error("Database error:", error);
-    throw new Error("블랙리스트 유저를 가져오는 중 오류가 발생했습니다.");
+    console.error("Error fetching blacklist:", error);
+    throw error;
   }
 }
 
-// Add a user to blacklist
-export async function addUserToBlacklist({ userId, blackUserId }) {
+// 블랙 유저 추가
+export async function addBlacklistUser(userId, blackUserId) {
   try {
-    const [result] = await db.execute(blacklistQueries.addBlacklist, [
-      userId,
-      blackUserId,
-    ]);
-    return result.affectedRows > 0; // Return true if insertion was successful
+    await db.execute(blacklistQueries.addBlacklistedUser, [userId, blackUserId]);
+    return { success: true, message: "User added to blacklist." };
   } catch (error) {
-    console.error("Database error:", error);
-    throw new Error("블랙리스트에 추가하는 중 오류가 발생했습니다.");
+    console.error("Error adding user to blacklist:", error);
+    throw error;
   }
 }
 
-// Remove a user from blacklist
-export async function removeUserFromBlacklist({ userId, blackUserId }) {
+// 블랙 유저 상태 업데이트 (삭제: status_code = 1)
+export async function updateBlacklistStatus(userId, blackUserId, statusCode) {
   try {
-    const [result] = await db.execute(blacklistQueries.removeBlacklist, [
-      userId,
-      blackUserId,
-    ]);
-    return result.affectedRows > 0; // Return true if deletion was successful
+    await db.execute(blacklistQueries.updateBlacklistStatus, [statusCode, userId, blackUserId]);
+    return { success: true, message: "Blacklist status updated." };
   } catch (error) {
-    console.error("Database error:", error);
-    throw new Error("블랙리스트에서 제거하는 중 오류가 발생했습니다.");
+    console.error("Error updating blacklist status:", error);
+    throw error;
   }
 }
