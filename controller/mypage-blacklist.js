@@ -1,77 +1,64 @@
-import {
-  getBlacklistedUsersById,
-  addUserToBlacklist,
-  removeUserFromBlacklist,
-} from "../data/mypage-blacklist.js";
+import { fetchBlacklist, addBlacklistUser, updateBlacklistStatus } from "../data/mypage-blacklist.js";
+import { config } from "../config.js";
 
-// 블랙리스트 불러오는 함수
-export async function getBlacklistedUsersController(req, res) {
-  const { id } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ message: "유저 ID가 필요합니다" });
-  }
-
+// 블랙리스트 유저 목록 불러오기
+export async function getBlacklist(req, res) {
   try {
-    const blacklistedUsers = await getBlacklistedUsersById({ id });
+    const { userId } = req.body;
 
-    if (blacklistedUsers.length === 0) {
-      return res.status(404).json({ message: "블랙 멤버가 없습니다" });
+    if (!userId) {
+      return res.status(400).json({ message: "userId 값이 필요합니다." });
     }
 
-    return res.status(200).json(blacklistedUsers);
+    const blacklist = await fetchBlacklist(userId);
+
+    if (!blacklist.length) {
+      return res.status(200).json({ message: "블랙리스트에 등록된 사용자가 없습니다.", data: [] });
+    }
+
+    const responseData = blacklist.map(user => ({
+      userId: user.userId,
+      username: user.username,
+      profilePath: user.profilePath || config.profile.basic_profile_path,
+    }));
+
+    res.status(200).json(responseData);
   } catch (error) {
-    console.error("블랙리스트 fetch 오류:", error);
-    return res.status(500).json({ message: "서버 오류" });
+    console.error("Error fetching blacklist:", error);
+    res.status(500).json({ message: "서버 오류" });
   }
 }
 
-// 블랙리스트 추가하는 함수
-export async function addUserToBlacklistController(req, res) {
-  const { userId, blackUserId } = req.body;
-
-  if (!userId || !blackUserId) {
-    return res
-      .status(400)
-      .json({ message: "User ID 와 Black User ID 가 필요합니다" });
-  }
-
+// 블랙리스트 유저 추가
+export async function addBlacklist(req, res) {
   try {
-    const success = await addUserToBlacklist({ userId, blackUserId });
+    const { userId, blackUserId } = req.body;
 
-    if (!success) {
-      return res.status(500).json({ message: "블랙 유저 등록에 실패했습니다" });
+    if (!userId || !blackUserId) {
+      return res.status(400).json({ message: "userId와 blackUserId 값이 필요합니다." });
     }
 
-    return res
-      .status(201)
-      .json({ message: "블랙리스트에 성공적으로 등록되었습니다" });
+    await addBlacklistUser(userId, blackUserId);
+    res.status(200).json({ message: "블랙리스트에 사용자가 추가되었습니다." });
   } catch (error) {
-    console.error("블랙 리스트 유저 등록 에러:", error);
-    return res.status(500).json({ message: "서버 오류" });
+    console.error("Error adding user to blacklist:", error);
+    res.status(500).json({ message: "서버 오류" });
   }
 }
 
-// 블랙리스트 삭제하는 함수
-export async function removeUserFromBlacklistController(req, res) {
-  const { userId, blackUserId } = req.body;
-
-  if (!userId || !blackUserId) {
-    return res
-      .status(400)
-      .json({ message: "User ID 와 Black User ID가 필요합니다" });
-  }
-
+// 블랙리스트 유저 삭제 (상태 변경)
+export async function removeBlacklist(req, res) {
   try {
-    const success = await removeUserFromBlacklist({ userId, blackUserId });
+    const { userId, blackUserId } = req.body;
 
-    if (!success) {
-      return res.status(500).json({ message: "블랙 유저 삭제에 실패했습니다" });
+    if (!userId || !blackUserId) {
+      return res.status(400).json({ message: "userId와 blackUserId 값이 필요합니다." });
     }
 
-    return res.status(200).json({ message: "블랙 유저 삭제에 성공했습니다" });
+    await updateBlacklistStatus(userId, blackUserId, 1); // 상태 코드 1: 삭제 상태
+    res.status(200).json({ message: "블랙리스트 상태가 업데이트되었습니다." });
   } catch (error) {
-    console.error("블랙 유저 삭제 실패:", error);
-    return res.status(500).json({ message: "서버 오류" });
+    console.error("Error updating blacklist status:", error);
+    res.status(500).json({ message: "서버 오류" });
   }
 }
