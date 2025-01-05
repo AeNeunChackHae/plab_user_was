@@ -5,15 +5,14 @@ import { getUserMatchSchedule, cancelSocialMatch } from "../controller/mypage-my
 import { getBlacklist, addBlacklist, removeBlacklist } from "../controller/mypage-blacklist.js";
 import * as mypageChangeController from "../controller/mypage-change.js";
 import  * as fileUpload from "../middleware/fileUpload.js"
-
+import { getMyInfo } from "../controller/mypage.js";
 // --
 import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
-import { getMyInfo } from "../controller/mypage.js";
-import { deleteUser } from "../controller/mypage-withdrawarl.js";
 import { fetchCardStats } from "../controller/mypage-mylevel-card.js";
 import { fetchLevelStats } from "../controller/mypage-mylevel-level.js";
 import { getCompletedMatchesController } from "../controller/mypage-mylevel-activity.js";
 import { insertPhysicalActivityController } from "../controller/mypage-mylevel-activity.js";
+import { getUserLevelAndFeedbackController } from "../controller/mypage-level.js";
 
 const router = express.Router();
 
@@ -42,15 +41,13 @@ router.put('/change/general/birthdate', isAuth, mypageChangeController.updateBir
 // 비밀번호 변경
 router.put('/change/general/password', isAuth, validatePasswordChange, mypageChangeController.updatePassword);
 
+// 사용자 레벨 및 카드 + 피드백 정보 조회
+router.get('/mylevel', isAuth, getUserLevelAndFeedbackController);
+
 // --
 
 // 블랙리스트 유저 추가
 router.post("/blacklist/add", isAuth, addBlacklist);
-
-// 마이페이지 메인 > 로그아웃
-
-// 마이페이지 메인 > 탈퇴하기 페이지
-router.delete("/withdrawal", authenticateToken, deleteUser); // 유저 삭제
 
 // 마이페이지 메인 > 마이레벨 페이지 : sidebar 레벨이미지경로, 받은카드, 피드백, 평균 활동량, 매치 리뷰(활동량 기입)
 router.post("/mylevelpics", authenticateToken, fetchLevelStats); // 사이드바 레벨 이미지 path 받아오기

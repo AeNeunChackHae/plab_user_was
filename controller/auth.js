@@ -41,18 +41,40 @@ export async function signup(req, res, next) {
 
 // 로그인
 export async function login(req, res, next) {
-    const { email, login_password } = req.body
-    const user = await authRepository.findByEmail(email)
-    if(!user){
-        res.status(401).json({message:`아이디 이메일을 찾을 수 없음`})
+    try {
+      const { email, login_password } = req.body;
+  
+      // 1️사용자 이메일로 조회
+      const user = await authRepository.findByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: '이메일을 찾을 수 없습니다.' });
+      }
+  
+      // 2️비밀번호 검증
+      const isValidPassword = await bcrypt.compare(login_password, user.login_password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
+      }
+  
+      // 3️JWT 토큰 생성
+      const token = await createJwtToken(user.id);
+  
+      // 4️로그인 성공 응답
+      res.status(200).json({
+        success: true,
+        message: '로그인 성공',
+        token,
+        id: user.id,
+        username: user.username,
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({
+        success: false,
+        message: '서버 오류로 로그인에 실패했습니다.',
+      });
     }
-    const isValidPassword = await bcrypt.compare(login_password, user.login_password)
-    if(!isValidPassword){
-        return res.status(401).json({message: `아이디 또는 비밀번호를 확인하세요`})
-    }
-    const token = await createJwtToken(user.id)
-    res.status(201).json({token, id: user.id, username: user.username})
-}
+  }
 
 // 토큰 인증
 export async function verify(req, res, next) {
@@ -70,3 +92,54 @@ export async function me(req, res, next) {
     }
     res.status(200).json({token: req.token, id: user.id})
 }
+
+// 로그아웃
+export const logout = (req, res) => {
+    try {
+      // 로그아웃 처리 (프론트에서 클라이언트가 토큰을 삭제하도록 안내)
+      console.log(`User ID: ${req.userId} 로그아웃`);
+  
+      res.json({
+        success: true,
+        message: '로그아웃 되었습니다. 브라우저에서 토큰을 삭제해주세요.',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({
+        success: false,
+        message: '서버 오류로 로그아웃에 실패했습니다.',
+      });
+    }
+  };
+
+// 회원 탈퇴
+export async function deleteAccount(req, res) {
+    try {
+      const userId = req.userId;
+  
+      // 진행 예정 매치 확인
+      const upcomingMatches = await authRepository.findUpcomingMatchesByUserId(userId);
+      if (upcomingMatches.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: '진행 예정인 매치가 있습니다. 매치 완료 후 탈퇴가 가능합니다.',
+          data: upcomingMatches,
+        });
+      }
+  
+      // 사용자 삭제
+      await authRepository.deleteUserById(userId);
+      console.log(`User ID: ${userId} 계정 삭제`);
+  
+      return res.status(200).json({
+        success: true,
+        message: '계정이 성공적으로 삭제되었습니다.',
+      });
+    } catch (error) {
+      console.error('Account deletion error:', error);
+      return res.status(500).json({
+        success: false,
+        message: '서버 오류로 인해 계정 삭제에 실패했습니다.',
+      });
+    }
+  }
