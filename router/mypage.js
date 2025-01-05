@@ -7,7 +7,6 @@ import  * as fileUpload from "../middleware/fileUpload.js"
 // --
 import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
 import { getMyInfo } from "../controller/mypage.js";
-import { modifyProfile } from "../controller/mypage-change-profile.js";
 import { modifyBirthdate } from "../controller/mypage-change-general.js";
 import { deleteUser } from "../controller/mypage-withdrawarl.js";
 import { updatePassword } from "../controller/mypage-change-pw.js";
@@ -41,9 +40,6 @@ router.put("/change/profile", isAuth, fileUpload.fileUpload, fileUpload.aws_s3_u
 
 // 블랙리스트 유저 추가
 router.post("/blacklist/add", isAuth, addBlacklist);
-
-// 마이페이지 메인 > 프로필 수정 페이지
-router.put("/change/profile", authenticateToken, modifyProfile); // 기존 DB 내 데이터 덮어쓰기
 
 // 마이페이지 메인 > 개인정보 수정 페이지
 router.put("/change/general", authenticateToken, modifyBirthdate); // 생일 업데이트 (덮어쓰기)

@@ -1,42 +1,7 @@
 import { getUserProfileData, updateUserProfileData } from '../data/mypage-change.js';
 import { config } from '../config.js';
 
-/**
- * 배열 값 변환 함수
- * @param {any} value - 환경 변수 값
- * @returns {string[]} - 배열로 변환된 값
- */
-function ensureArray(value) {
-  if (Array.isArray(value)) {
-    return value;
-  }
-  if (typeof value === "string") {
-    return value
-      .replace(/[\[\]\s]/g, "") // 대괄호 및 공백 제거
-      .split(",") // 콤마로 분리
-      .map((item) => item.trim());
-  }
-  return [];
-}
-
-/**
- * 매핑된 값 반환 함수
- * @param {number|string} key - 키값 (숫자 또는 문자열)
- * @param {string[]} mappingArray - 매핑 배열
- * @param {string} label - 오류 메시지용 라벨
- * @returns {string} - 매핑된 텍스트 값
- */
-function mapValue(key, mappingArray, label) {
-  if (key === null || key === undefined) return "알 수 없음";
-  const index = Number(key);
-  if (index >= 0 && index < mappingArray.length) {
-    return mappingArray[index];
-  }
-  console.warn(`유효하지 않은 ${label} 키: ${key}`);
-  return "알 수 없음";
-}
-
-// 사용자 정보 조회
+// ✅ 사용자 정보 조회
 export const getUserProfile = async (req, res) => {
   const userId = req.userId;
 
@@ -52,16 +17,8 @@ export const getUserProfile = async (req, res) => {
       return res.status(404).json({ message: '사용자 정보를 찾을 수 없습니다.' });
     }
 
-    const genderMapping = ensureArray(config.mypage.gender_type_code);
-    const positionMapping = ensureArray(config.mypage.position_type_code);
-    const abilityMapping = ensureArray(config.mypage.play_style_code);
- 
-    userProfile.gender = mapValue(userProfile.gender, genderMapping, "gender");
-    userProfile.prefer_position = mapValue(userProfile.prefer_position, positionMapping, "position");
-    userProfile.ability = mapValue(userProfile.ability, abilityMapping, "ability");
-
     // 프로필 경로 기본값 설정
-    userProfile.profile_path = userProfile.profile_path || config.profile.basic_profile_path;
+    userProfile.profile_path = userProfile.profile_path || "https://d31wz4d3hgve8q.cloudfront.net/static/img/img_profile_default.png";
 
     res.json(userProfile);
   } catch (error) {
@@ -70,8 +27,7 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
-
-// 사용자 정보 수정
+// ✅ 사용자 정보 수정
 export const updateUserProfile = async (req, res) => {
   const userId = req.userId;
   const {
