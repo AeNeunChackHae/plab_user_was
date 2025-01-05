@@ -27,16 +27,6 @@ export async function updateUserProfileData(photo_except, userId, profileData) {
     profile_path,
   } = profileData;
 
-  console.log('🔍 업데이트 데이터 확인:');
-  console.log('photo_except:', photo_except);
-  console.log('userId:', userId);
-  console.log('username:', username);
-  console.log('gender:', gender);
-  console.log('prefer_position:', prefer_position);
-  console.log('ability:', ability);
-  console.log('introduce:', introduce);
-  console.log('profile_path:', profile_path);
-
   try {
     if (photo_except) {
       await db.execute(
@@ -56,3 +46,25 @@ export async function updateUserProfileData(photo_except, userId, profileData) {
     throw new Error("사용자 정보를 수정하는 중 오류가 발생했습니다.");
   }
 }
+
+// 사용자 이메일 생년월일 조회
+export const getUserInfoData = async (userId) => {
+  const [result] = await db.execute(userProfileQuery.selectUserInfo, [userId]);
+  return result[0];
+};
+
+// 생년월일 변경
+export const updateBirthDateData = async (userId, birthDate) => {
+  await db.execute(userProfileQuery.updateUserBirth, [birthDate, userId]);
+};
+
+// 기존 비밀번호 가져오기
+export const getUserPassword = async (userId) => {
+  const [result] = await db.execute(userProfileQuery.selectUserPassword, [userId]);
+  return result[0];
+};
+
+// 비밀번호 변경
+export const updatePasswordData = async (userId, newPassword) => {
+  await db.execute(userProfileQuery.updateUserPassword, [newPassword, userId]);
+};

@@ -6,7 +6,7 @@ import { config } from '../config.js'
 
 async function createJwtToken(id) {
     return jwt.sign(
-    {id}, config.jwt.secretKey, {expiresIn: config.jwt.expiresInSec})
+    {id}, config.jwt.user_secretKey, {expiresIn: config.jwt.expiresInSec})
 }
 
 // 회원가입
