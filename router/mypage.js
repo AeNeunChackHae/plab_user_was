@@ -2,6 +2,8 @@ import express from "express";
 import { isAuth } from "../middleware/auth.js";
 import { getUserMatchSchedule, cancelSocialMatch } from "../controller/mypage-myplab.js";
 import { getBlacklist, addBlacklist, removeBlacklist } from "../controller/mypage-blacklist.js";
+import { getUserProfile, updateUserProfile } from "../controller/mypage-change.js";
+import  * as fileUpload from "../middleware/fileUpload.js"
 // --
 import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
 import { getMyInfo } from "../controller/mypage.js";
@@ -30,6 +32,10 @@ router.post("/blacklist", isAuth, getBlacklist);
 
 // 블랙리스트 유저 삭제
 router.post("/blacklist/remove", isAuth, removeBlacklist);
+
+// 사용자 프로필 조회 및 수정
+router.get("/change/profile", isAuth, getUserProfile);
+router.put("/change/profile", isAuth, fileUpload.fileUpload, fileUpload.aws_s3_upload, updateUserProfile);
 
 // --
 
