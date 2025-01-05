@@ -1,9 +1,11 @@
 import express from "express";
 import { isAuth } from "../middleware/auth.js";
+import { validatePasswordChange } from '../middleware/validator.js';
 import { getUserMatchSchedule, cancelSocialMatch } from "../controller/mypage-myplab.js";
 import { getBlacklist, addBlacklist, removeBlacklist } from "../controller/mypage-blacklist.js";
-import { getUserProfile, updateUserProfile } from "../controller/mypage-change.js";
+import * as mypageChangeController from "../controller/mypage-change.js";
 import  * as fileUpload from "../middleware/fileUpload.js"
+
 // --
 import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
 import { getMyInfo } from "../controller/mypage.js";
@@ -33,8 +35,14 @@ router.post("/blacklist", isAuth, getBlacklist);
 router.post("/blacklist/remove", isAuth, removeBlacklist);
 
 // 사용자 프로필 조회 및 수정
-router.get("/change/profile", isAuth, getUserProfile);
-router.put("/change/profile", isAuth, fileUpload.fileUpload, fileUpload.aws_s3_upload, updateUserProfile);
+router.get("/change/profile", isAuth, mypageChangeController.getUserProfile);
+router.put("/change/profile", isAuth, fileUpload.fileUpload, fileUpload.aws_s3_upload, mypageChangeController.updateUserProfile);
+
+// 사용자 이메일, 생년월일 정보 조회 및 변경
+router.get('/change/general', isAuth, mypageChangeController.getUserInfo);
+router.put('/change/general/birthdate', isAuth, mypageChangeController.updateBirthDate);
+// 비밀번호 변경
+router.put('/change/general/password', isAuth, validatePasswordChange, mypageChangeController.updatePassword);
 
 // --
 
@@ -42,7 +50,7 @@ router.put("/change/profile", isAuth, fileUpload.fileUpload, fileUpload.aws_s3_u
 router.post("/blacklist/add", isAuth, addBlacklist);
 
 // 마이페이지 메인 > 개인정보 수정 페이지
-router.put("/change/general", authenticateToken, modifyBirthdate); // 생일 업데이트 (덮어쓰기)
+router.put("/change/general", authenticateToken, modifyBirthdate);
 
 // 마이페이지 메인 > 비밀번호 바꾸기 페이지
 router.put("/change/pw", authenticateToken, updatePassword); // 패스워드 변경
