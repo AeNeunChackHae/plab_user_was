@@ -3,6 +3,8 @@ import * as authController from "../controller/auth.js";
 import { body } from "express-validator";
 import { validate } from "../middleware/validator.js";
 import { isAuth } from "../middleware/auth.js";
+import { logout } from "../controller/auth.js";
+
 const router = express.Router();
 
 const validateLogin = [
@@ -72,5 +74,11 @@ router.post("/login", validateLogin, authController.login);
 
 // 로그인 유지
 router.get("/me", isAuth, authController.me);
+
+// 사용자 로그아웃
+router.post('/logout', isAuth, logout)
+
+// 회원탈퇴
+router.delete('/delete', isAuth, authController.deleteAccount)
 
 export default router;
