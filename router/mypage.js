@@ -9,9 +9,7 @@ import  * as fileUpload from "../middleware/fileUpload.js"
 // --
 import { authenticateToken } from "../middleware/auth_js.js"; // 토큰 인증 2번째 방법
 import { getMyInfo } from "../controller/mypage.js";
-import { modifyBirthdate } from "../controller/mypage-change-general.js";
 import { deleteUser } from "../controller/mypage-withdrawarl.js";
-import { updatePassword } from "../controller/mypage-change-pw.js";
 import { fetchCardStats } from "../controller/mypage-mylevel-card.js";
 import { fetchLevelStats } from "../controller/mypage-mylevel-level.js";
 import { getCompletedMatchesController } from "../controller/mypage-mylevel-activity.js";
@@ -48,12 +46,6 @@ router.put('/change/general/password', isAuth, validatePasswordChange, mypageCha
 
 // 블랙리스트 유저 추가
 router.post("/blacklist/add", isAuth, addBlacklist);
-
-// 마이페이지 메인 > 개인정보 수정 페이지
-router.put("/change/general", authenticateToken, modifyBirthdate);
-
-// 마이페이지 메인 > 비밀번호 바꾸기 페이지
-router.put("/change/pw", authenticateToken, updatePassword); // 패스워드 변경
 
 // 마이페이지 메인 > 로그아웃
 
