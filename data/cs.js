@@ -16,3 +16,4 @@ export const postFAQ = async (user_id, title, content) => {
     const [result] = await db.query(query, [user_id, title, content]);
     return result;
 };
+
