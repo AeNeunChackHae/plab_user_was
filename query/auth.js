@@ -4,30 +4,25 @@ export const authQuery = {
     insertUser:
     "INSERT INTO PFB_USER (phone_number, email, login_password, username, gender, birth_date) VALUES (?, ?, ?, ?, ?, ?)",
     selectUserById: "SELECT * FROM PFB_USER WHERE id=?",
-    deleteUserById: 'DELETE FROM PFB_USER WHERE id = ?'
+    deleteUserById: 'DELETE FROM PFB_USER WHERE id = ?',
+    findEmail: 
+    `
+        SELECT email
+        FROM PFB_USER
+        WHERE username = ?
+        AND phone_number = ?
+        AND status_code = 0;
+    `,
+    findUserByInfo: 
+        `
+        SELECT * FROM PFB_USER
+        WHERE username = ? AND phone_number = ? AND email = ?
+        `,
+    updatePassword: 
+        `
+        UPDATE PFB_USER 
+        SET login_password = ? 
+        WHERE id = ?
+        `,
 };
 
-/*
-    조인을 통해서 값을 가져와야 할 시 아래처럼 이름을 지정한다.
-    ex) joinMatchAndStadium -> (join(테이블명)and(테이블명)and...)
-
-
-    내용이 길 경우 아래처럼 나눠서 적는다.
-    ex)
-    joinStadiumAndMatch : `
-        SELECT 
-            s.width,
-            s.height,
-            s.shower_yn AS shower,
-            s.parking_yn AS parking,
-            s.lend_shoes_yn AS lendShoes,
-            s.sell_drink_yn AS sellDrink,
-            s.notice
-        FROM 
-            PFB_STADIUM s
-        JOIN 
-            PFB_MATCH m ON s.id = m.stadium_id
-        WHERE 
-            m.id = ?;
-    `;
-*/
