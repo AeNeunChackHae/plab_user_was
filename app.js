@@ -9,9 +9,10 @@ import stadiumRouter from "./router/stadium.js";
 import mypageRouter from "./router/mypage.js";
 import exploreRouter from "./router/explore.js";
 import leagueRouter from "./router/league.js";
+import csRouter from "./router/cs.js"
+import paymentRouter from "./router/payment.js"
 import cors from "cors";
 import path from "path";
-import csRouter from "./router/cs.js"
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use("/mypage", mypageRouter);
 app.use("/explore", exploreRouter);
 app.use("/league", leagueRouter);
 app.use("/api/cs", csRouter);
+app.use("/payment", paymentRouter);
 
 // 서버 시작
 app.listen(port, () => {
