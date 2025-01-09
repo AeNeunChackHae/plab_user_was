@@ -81,4 +81,10 @@ router.post('/logout', isAuth, logout)
 // 회원탈퇴
 router.delete('/delete', isAuth, authController.deleteAccount)
 
+// 이메일 찾기
+router.post('/find-email', authController.findEmailController)
+
+// 비밀번호 찾기
+router.post('/find-password', authController.sendResetPasswordEmail)
+
 export default router;
