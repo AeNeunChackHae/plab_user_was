@@ -11,12 +11,7 @@ export const blacklistQueries = {
         AND PFB_BLACK.status_code = 0
   `,
 
-  // 블랙 유저 추가
-  addBlacklistedUser: `
-      INSERT INTO PFB_BLACK (user_id, black_user_id, status_code)
-      VALUES (?, ?, 0)
-      ON DUPLICATE KEY UPDATE status_code = 0
-  `,
+  // 블랙 유저 추가 -> mypage-feedback.js
 
   // 블랙 유저 상태 변경 (삭제: status_code = 1)
   updateBlacklistStatus: `
