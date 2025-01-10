@@ -2,12 +2,14 @@ import express from "express";
 import { isAuth } from "../middleware/auth.js";
 import { getMyInfo } from "../controller/mypage.js";
 import { getUserMatchSchedule, cancelSocialMatch } from "../controller/mypage-myplab.js";
-import { getBlacklist, addBlacklist, removeBlacklist } from "../controller/mypage-blacklist.js";
+import { getBlacklist, removeBlacklist } from "../controller/mypage-blacklist.js";
 import { validatePasswordChange } from '../middleware/validator.js';
 import * as mypageChangeController from "../controller/mypage-change.js";
 import  * as fileUpload from "../middleware/fileUpload.js"
 import * as myLevelController from "../controller/mypage-level.js"
 import * as activityController from "../controller/mypage-activity.js"
+import * as feedbackController from "../controller/mypage-feedback.js";
+
 
 const router = express.Router();
 
@@ -25,9 +27,6 @@ router.post("/blacklist", isAuth, getBlacklist);
 
 // 블랙리스트 유저 삭제
 router.post("/blacklist/remove", isAuth, removeBlacklist);
-
-// 블랙리스트 유저 추가
-router.post("/blacklist/add", isAuth, addBlacklist);
 
 // 사용자 프로필 조회
 router.get("/change/profile", isAuth, mypageChangeController.getUserProfile);
@@ -53,5 +52,19 @@ router.get("/mylevel", isAuth, myLevelController.getUserCardsAndFeedbackAndActiv
 // 사용자 활동량 저장 및 수정
 router.post("/mylevel/activity", isAuth, activityController.insertOrUpdateUserMatchActivity)
 
+// 매치 참여 유저 리스트
+router.get('/feedback/:matchId', isAuth, feedbackController.getMatchUserList);
+
+// 비매너 피드백 등록
+router.post('/feedback/:matchId/bad', isAuth, feedbackController.registerBadFeedback);
+
+// 칭찬 피드백 등록
+router.post('/feedback/:matchId/good', isAuth, feedbackController.registerGoodFeedback);
+
+// 사용자가 등록한 블랙리스트 확인
+router.get('/feedback/:matchId/checkblack', isAuth, feedbackController.getBlacklistStatus);
+
+// 블랙리스트 등록 및 업데이트
+router.post('/blacklist/add', isAuth, feedbackController.registerOrUpdateBlacklist);
 
 export default router;

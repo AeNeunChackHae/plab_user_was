@@ -17,6 +17,7 @@ export const matchQuery = {
             AND m.match_start_time <= DATE_ADD(NOW(), INTERVAL 14 DAY) -- 14일 이내의 데이터만
             AND m.match_type = 0 -- 소셜 매치만
             AND m.status_code IN (0, 1) -- 모집중, 마감만
+            AND m.manager_id IS NOT NULL -- 매니저 ID가 NULL이 아닌 데이터만
             {dateCondition}
             {regionCondition}
             {genderCondition}

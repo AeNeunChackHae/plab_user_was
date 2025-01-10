@@ -53,6 +53,8 @@ export const userLevelAndFeedbackQuery = {
         JOIN PFB_STADIUM s ON m.stadium_id = s.id
         LEFT JOIN PFB_PHYSICAL_ACTIVITY pa ON mu.match_id = pa.match_id AND mu.user_id = ?
         WHERE mu.user_id = ?
+        AND mu.status_code = 0
+        AND m.status_code =3
         ORDER BY m.match_start_time DESC;
     `,
 

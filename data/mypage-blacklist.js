@@ -12,16 +12,7 @@ export async function fetchBlacklist(userId) {
   }
 }
 
-// 블랙 유저 추가
-export async function addBlacklistUser(userId, blackUserId) {
-  try {
-    await db.execute(blacklistQueries.addBlacklistedUser, [userId, blackUserId]);
-    return { success: true, message: "User added to blacklist." };
-  } catch (error) {
-    console.error("Error adding user to blacklist:", error);
-    throw error;
-  }
-}
+// 블랙 유저 추가 -> mypage-feedback.js
 
 // 블랙 유저 상태 업데이트 (삭제: status_code = 1)
 export async function updateBlacklistStatus(userId, blackUserId, statusCode) {

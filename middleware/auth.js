@@ -16,6 +16,7 @@ export const isAuth = async (req, res, next) => {
   jwt.verify(token, config.jwt.user_secretKey, async (error, decoded) => {
     if (error) {
       console.log("토큰 에러");
+      console.error("JWT Verify Error:", error);
       return res.status(401).json({ message: "토큰이 유용하지 않습니다." });
     }
     const user = await authRepository.findById(decoded.id);

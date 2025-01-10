@@ -51,7 +51,8 @@ export const mypageMyPlabMatchScheduleQueries = {
     WHERE 
       u.id = ?
       AND mu.status_code IN (0, 2)
-      AND m.status_code = 3;
+      AND m.status_code = 3
+    LIMIT 1;
     `,
 
   // 내가 취소한 매치 가져오기
