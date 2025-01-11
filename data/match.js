@@ -8,7 +8,7 @@ export async function findByMatchs(match_id){
 }
 
 export async function findDetailsById(match_id) {
-  console.log("매치 상세 정보 찾기 시작 - match_id:", match_id);
+  // console.log("매치 상세 정보 찾기 시작 - match_id:", match_id);
 
   return db.execute(matchQuery.joinMatchAndStadium, [match_id])
     .then(([rows]) => {
@@ -95,35 +95,36 @@ export async function checkApplicationStatus(match_id, user_id) {
   return rows.length > 0;
 }
 
-export async function addSocialMatchParticipant(match_id, user_id) {
-  try {
-    const [result] = await db.execute(matchQuery.insertSocialMatchParticipant, [
-      match_id,
-      user_id,
-    ]);
-    return result;
-  } catch (err) {
-    console.error("addSocialMatchParticipant Error:", err);
-    throw new Error("소셜 매치 참가 등록 중 오류 발생");
-  }
-}
+// export async function addSocialMatchParticipant(match_id, user_id) {
+//   try {
+//     const [result] = await db.execute(matchQuery.insertSocialMatchParticipant, [
+//       match_id,
+//       user_id,
+//     ]);
+//     console.log('결제에 담김reuslt값값',result)
+//     return result;
+//   } catch (err) {
+//     console.error("addSocialMatchParticipant Error:", err);
+//     throw new Error("소셜 매치 참가 등록 중 오류 발생");
+//   }
+// }
 
-export async function getCurrentParticipants(match_id) {
-  try {
-    const [result] = await db.execute(matchQuery.countParticipants, [match_id]);
-    return result[0]?.current_participants || 0;
-  } catch (err) {
-    console.error("getCurrentParticipants Error:", err);
-    throw new Error("참가자 수 확인 중 오류 발생");
-  }
-}
+// export async function getCurrentParticipants(match_id) {
+//   try {
+//     const [result] = await db.execute(matchQuery.countParticipants, [match_id]);
+//     return result[0]?.current_participants || 0;
+//   } catch (err) {
+//     console.error("getCurrentParticipants Error:", err);
+//     throw new Error("참가자 수 확인 중 오류 발생");
+//   }
+// }
 
-export async function updateMatchStatus(match_id) {
-  try {
-    const [result] = await db.execute(matchQuery.updateMatchStatus, [match_id]);
-    return result;
-  } catch (err) {
-    console.error("updateMatchStatus Error:", err);
-    throw new Error("매치 상태 업데이트 중 오류 발생");
-  }
-}
+// export async function updateMatchStatus(match_id) {
+//   try {
+//     const [result] = await db.execute(matchQuery.updateMatchStatus, [match_id]);
+//     return result;
+//   } catch (err) {
+//     console.error("updateMatchStatus Error:", err);
+//     throw new Error("매치 상태 업데이트 중 오류 발생");
+//   }
+// }

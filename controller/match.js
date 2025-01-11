@@ -132,7 +132,7 @@ export async function matchLevelStats(req, res) {
   const { match_id } = req.body;
 
   if (!match_id) {
-    console.log(match_id,'없음')
+    // console.log(match_id,'없음')
     return res
       .status(400)
       .json({ message: "match_id가 제공되지 않았습니다." });
@@ -191,22 +191,6 @@ export async function matchLevelStats(req, res) {
   }
 }
 
-// export async function applyForMatch(req, res) {
-//   const { match_id, user_id } = req.body;
-
-//   if (!match_id || !user_id) {
-//     return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
-//   }
-
-//   try {
-//     await matchData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
-//     res.status(201).json({ message: "매치 신청이 완료되었습니다." });
-//   } catch (err) {
-//     console.error("매치 신청 중 오류:", err);
-//     res.status(500).json({ message: "서버 오류가 발생했습니다." });
-//   }
-// }
-
 
 export async function blacklistCheck(req, res) {
   const { match_id, user_id } = req.body;
@@ -260,7 +244,7 @@ export async function checkApplicationStatusHandler(req, res) {
   }
 }
 
-export async function applyForMatch(req, res) {
+export async function applyForMatchWithValidation(req, res) {
   const { match_id, user_id } = req.body;
 
   if (!match_id || !user_id) {
@@ -290,3 +274,19 @@ export async function applyForMatch(req, res) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 }
+
+// export async function applyForMatchSimple(req, res) {
+//   const { match_id, user_id } = req.body;
+
+//   if (!match_id || !user_id) {
+//     return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
+//   }
+
+//   try {
+//     await matchData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
+//     res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+//   } catch (err) {
+//     console.error("매치 신청 중 오류:", err);
+//     res.status(500).json({ message: "서버 오류가 발생했습니다." });
+//   }
+// }

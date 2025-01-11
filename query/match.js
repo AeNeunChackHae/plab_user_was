@@ -141,20 +141,21 @@ export const matchQuery ={
     FROM PFB_MATCH_USER
     WHERE match_id = ? AND user_id = ? AND status_code = 0;
     `,
-    insertSocialMatchParticipant: `
-      INSERT INTO PFB_MATCH_USER (match_id, user_id, status_code)
-      VALUES (?, ?, 0);
-    `,
-    countParticipants: `
-      SELECT COUNT(*) AS current_participants
-      FROM PFB_MATCH_USER
-      WHERE match_id = ? AND status_code = 0;
-    `,
-    updateMatchStatus: `
-      UPDATE PFB_MATCH
-      SET status_code = 1
-      WHERE id = ?;
-    `,
+    // insertSocialMatchParticipant: `
+    // INSERT INTO PFB_MATCH_USER (match_id, user_id, status_code)
+    // VALUES (?, ?, 0)
+    // ON DUPLICATE KEY UPDATE status_code = 0;
+    // `,
+//     countParticipants: `
+//       SELECT COUNT(*) AS current_participants
+//       FROM PFB_MATCH_USER
+//       WHERE match_id = ? AND status_code = 0;
+//     `,
+//     updateMatchStatus: `
+//       UPDATE PFB_MATCH
+//       SET status_code = 1
+//       WHERE id = ?;
+//     `,
     
 }
 

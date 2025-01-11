@@ -77,9 +77,9 @@ export async function findStadiumById(stadium_id) {
   }
 
   export async function findStadiumMatchDetails(stadiumId) {
-    console.log("데이터 찾기 시작 - stadiumId:", stadiumId);
-    console.log("Gender Config:", config.stadium_match.match_gender_type_code);
-    console.log("Level Config:", config.stadium_match.match_level_limit_code);
+    // console.log("데이터 찾기 시작 - stadiumId:", stadiumId);
+    // console.log("Gender Config:", config.stadium_match.match_gender_type_code);
+    // console.log("Level Config:", config.stadium_match.match_level_limit_code);
 
     return db.execute(stadiumQuery.findStadiumMatchDetails, [stadiumId])
       .then(([rows]) => {
