@@ -50,3 +50,66 @@ export const getUserByIdController = async (req, res) => {
     res.status(500).json({ message: "사용자 정보를 가져오는 중 오류 발생" });
   }
 };
+
+export async function applyForMatchWithValidation(req, res) {
+  const { match_id, user_id } = req.body;
+
+  if (!match_id || !user_id) {
+    return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
+  }
+
+  try {
+    // 중복 확인
+    const isExisting = await paymemtData.checkExistingParticipant(match_id, user_id);
+    if (isExisting) {
+      // 중복 데이터가 있지만 status_code가 1인 경우만 업데이트
+      const isUpdated = await paymemtData.updateStatusToZero(match_id, user_id);
+      if (isUpdated) {
+        return res.status(200).json({ message: "매치 신청이 다시 활성화되었습니다." });
+      }
+      return res.status(400).json({ message: "이미 활성화된 상태입니다." });
+    }
+
+    // 현재 참가자 수 확인
+    const currentParticipants = await paymemtData.getCurrentParticipants(match_id);
+
+    if (currentParticipants >= 18) {
+      return res.status(400).json({ message: "이미 신청이 마감된 매치입니다." });
+    }
+
+    // 참가자 수가 17명인 경우 상태 업데이트
+    if (currentParticipants === 17) {
+      await paymemtData.addSocialMatchParticipant(match_id, user_id);
+      await paymemtData.updateMatchStatus(match_id); // 상태 업데이트
+      return res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+    }
+
+    // 참가자 수가 17명 미만인 경우 신청만 처리
+    await paymemtData.addSocialMatchParticipant(match_id, user_id);
+    res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+  } catch (err) {
+    console.error("매치 신청 중 오류:", err);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+}
+// export async function applyForMatchSimple(req, res) {
+//     const { match_id, user_id } = req.body;
+//     console.log('심플 매치 유저',match_id,user_id)
+//     if (!match_id || !user_id) {
+//         return res.status(400).json({ message: "match_id와 user_id가 필요합니다." });
+//     }
+
+//     try {
+//         // 중복 확인
+//         const isExisting = await paymemtData.checkExistingParticipant(match_id, user_id);
+//         if (isExisting) {
+//             return res.status(400).json({ message: "이미 매치에 신청한 사용자입니다." });
+//         }
+
+//         await paymemtData.addSocialMatchParticipant(match_id, user_id); // 소셜 매치에 참여
+//         res.status(201).json({ message: "매치 신청이 완료되었습니다." });
+//     } catch (err) {
+//         console.error("매치 신청 중 오류:", err);
+//         res.status(500).json({ message: "서버 오류가 발생했습니다." });
+//     }
+// }
