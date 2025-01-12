@@ -76,7 +76,7 @@ router.post("/login", validateLogin, authController.login);
 router.get("/me", isAuth, authController.me);
 
 // 사용자 로그아웃
-router.post('/logout', isAuth, logout)
+router.post('/logout', logout)
 
 // 회원탈퇴
 router.delete('/delete', isAuth, authController.deleteAccount)
