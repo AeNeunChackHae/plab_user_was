@@ -67,4 +67,13 @@ router.get('/feedback/:matchId/checkblack', isAuth, feedbackController.getBlackl
 // 블랙리스트 등록 및 업데이트
 router.post('/blacklist/add', isAuth, feedbackController.registerOrUpdateBlacklist);
 
+// 구장 정보 불러오기
+router.get('/feedback/:matchId/stadium', isAuth, feedbackController.getMatchStadiumDetails);
+
+// 구장 부정적 리뷰 등록
+router.post('/feedback/:matchId/stadium/bad', isAuth, feedbackController.addBadStadium);
+
+// 구장 긍정적 리뷰 등록
+router.post('/feedback/:matchId/stadium/good', isAuth, feedbackController.addGoodStadium);
+
 export default router;

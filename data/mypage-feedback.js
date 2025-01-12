@@ -82,3 +82,32 @@ export const upsertBlackUser = async (userId, blackUserId) => {
     }
 };
 
+export const getStadiumInfo = async (matchId) => {
+    try {
+      const [result] = await db.execute(feedbackQuery.selectStadiumInfo, [matchId]);
+      return result[0];
+    } catch (error) {
+      console.error('구장 정보 조회 오류:', error);
+      throw error;
+    }
+};
+
+export const findStadiumIdByMatchId = async (matchId) => {
+    try {
+        const [result] = await db.execute(feedbackQuery.getStadiumIdByMatchId, [matchId]);
+        return result.length ? result[0].stadium_id : null;
+    } catch (error) {
+        console.error('Error finding stadium ID by match ID:', error);
+        throw error;
+    }
+};
+
+export const addStadiumReview = async (stadiumId, userId, feedbackType, feedback) => {
+    try {
+        const [result] = await db.execute(feedbackQuery.insertStadiumReview, [stadiumId, userId, feedbackType, feedback]);
+        return result;
+    } catch (error) {
+        console.error('구장 리뷰 등록 오류:', error);
+        throw error;
+    }
+};

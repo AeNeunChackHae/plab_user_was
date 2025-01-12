@@ -57,5 +57,27 @@ export const feedbackQuery = {
         UPDATE PFB_BLACK 
                 SET status_code = 0 
                 WHERE user_id = ? AND black_user_id = ? AND status_code = 1
+    `,
+
+    // 구장 정보 불러오기
+    selectStadiumInfo: `
+        SELECT 
+            s.stadium_name,
+            s.full_address
+        FROM PFB_MATCH AS m
+        JOIN PFB_STADIUM AS s
+        ON m.stadium_id = s.id
+        WHERE m.id = ?;
+    `,
+
+    // 매치 id로 구장 id 찾기
+    getStadiumIdByMatchId: `
+        SELECT stadium_id FROM PFB_MATCH WHERE id = ?;
+    `,
+
+    // 구장 피드백
+    insertStadiumReview: `
+        INSERT INTO PFB_STADIUM_FEEDBACK (stadium_id, user_id, feedback_type, feedback) 
+        VALUES (?, ?, ?, ?);
     `
 };
