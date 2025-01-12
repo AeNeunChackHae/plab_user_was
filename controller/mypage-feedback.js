@@ -3,7 +3,7 @@ import * as feedbackRepository from '../data/mypage-feedback.js'
 // 매치 참여 유저 리스트 조회
 export const getMatchUserList = async (req, res) => {
     const userId = req.userId;
-    console.log(userId)
+    // console.log(userId)
     const { matchId } = req.params;
 
     if (!userId || !matchId) {
@@ -102,6 +102,101 @@ export const registerOrUpdateBlacklist = async (req, res) => {
         res.status(200).json({ success: true, message: 'Blacklist updated successfully' });
     } catch (error) {
         console.error('블랙리스트 등록/업데이트 오류:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// 구장 이름 및 주소 조회
+export const getMatchStadiumDetails = async (req, res) => {
+    const { matchId } = req.params;
+
+    if (!matchId) {
+        return res.status(400).json({ message: 'Match ID is required' });
+    }
+
+    try {
+        const stadiumDetails = await feedbackRepository.getStadiumInfo(matchId);
+
+        if (!stadiumDetails) {
+            return res.status(404).json({ message: 'Stadium not found for the given match ID.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: {
+                stadiumName: stadiumDetails.stadium_name,
+                fullAddress: stadiumDetails.full_address,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// 긍정적 구장 리뷰 등록
+export const addGoodStadium = async (req, res) => {
+    const { matchId } = req.params;
+    const { feedback } = req.body;
+    const userId = req.userId;
+
+    if (!matchId || !userId || feedback === undefined) {
+        return res.status(400).json({ message: 'Match ID, User ID, and Feedback are required' });
+    }
+
+    try {
+        // matchId로 stadiumId를 가져오기
+        const stadiumId = await feedbackRepository.findStadiumIdByMatchId(matchId);
+        if (!stadiumId) {
+            return res.status(404).json({ message: 'Stadium not found for the given match ID' });
+        }
+
+        // 피드백 등록
+        if (Array.isArray(feedback)) {
+            // 배열인 경우: 각 항목을 개별적으로 삽입
+            for (const item of feedback) {
+                await feedbackRepository.addStadiumReview(stadiumId, userId, 0, item);
+            }
+        } else {
+            // 단일 값인 경우
+            await feedbackRepository.addStadiumReview(stadiumId, userId, 0, feedback);
+        }
+
+        res.status(200).json({ success: true, message: 'Positive feedback registered successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// 부정적 구장 리뷰 등록
+export const addBadStadium = async (req, res) => {
+    const { matchId } = req.params;
+    const { feedback } = req.body;
+    const userId = req.userId;
+
+    if (!matchId || !userId || feedback === undefined) {
+        return res.status(400).json({ message: 'Match ID, User ID, and Feedback are required' });
+    }
+
+    try {
+        // matchId로 stadiumId를 가져오기
+        const stadiumId = await feedbackRepository.findStadiumIdByMatchId(matchId);
+        if (!stadiumId) {
+            return res.status(404).json({ message: 'Stadium not found for the given match ID' });
+        }
+
+        // 피드백 등록
+        if (Array.isArray(feedback)) {
+            // 배열인 경우: 각 항목을 개별적으로 삽입
+            for (const item of feedback) {
+                await feedbackRepository.addStadiumReview(stadiumId, userId, 1, item);
+            }
+        } else {
+            // 단일 값인 경우
+            await feedbackRepository.addStadiumReview(stadiumId, userId, 1, feedback);
+        }
+
+        res.status(200).json({ success: true, message: 'Negative feedback registered successfully' });
+    } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
