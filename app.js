@@ -11,6 +11,7 @@ import exploreRouter from "./router/explore.js";
 import leagueRouter from "./router/league.js";
 import csRouter from "./router/cs.js"
 import paymentRouter from "./router/payment.js"
+import searchRouter from "./router/search.js"
 import cors from "cors";
 import path from "path";
 
@@ -47,6 +48,7 @@ app.use("/explore", exploreRouter);
 app.use("/league", leagueRouter);
 app.use("/api/cs", csRouter);
 app.use("/payment", paymentRouter);
+app.use("/api/search", searchRouter);
 
 // 서버 시작
 app.listen(port, () => {
