@@ -43,7 +43,7 @@ export const userLevelAndFeedbackQuery = {
             DATE_FORMAT(m.match_start_time, '%Y-%m-%d %H:%i:%s') AS match_start_time,
             DATE_FORMAT(m.match_end_time, '%Y-%m-%d %H:%i:%s') AS match_end_time,
             s.stadium_name AS stadium_name,
-            COALESCE(pa.match_id, m.id) AS match_id, -- NULL이면 m.id 사용
+            m.id AS match_id, -- 활동량이 없는 경우에도 매치 아이디 반환
             pa.activity_time,
             pa.distance,
             pa.kilocalorie,
@@ -51,12 +51,13 @@ export const userLevelAndFeedbackQuery = {
         FROM PFB_MATCH_USER mu
         JOIN PFB_MATCH m ON mu.match_id = m.id
         JOIN PFB_STADIUM s ON m.stadium_id = s.id
-        LEFT JOIN PFB_PHYSICAL_ACTIVITY pa ON mu.match_id = pa.match_id AND mu.user_id = ?
-        WHERE mu.user_id = ?
-        AND mu.status_code = 0
-        AND m.status_code =3
+        LEFT JOIN PFB_PHYSICAL_ACTIVITY pa 
+            ON mu.match_id = pa.match_id AND pa.user_id = ? -- pa.user_id 조건은 ON 절에서만 적용
+        WHERE mu.user_id = ? -- user_id에 따른 매치 데이터 필터링
+        AND mu.status_code = 0 -- 매치 신청 상태 확인
+        AND m.status_code = 3 -- 매치 진행 상태 확인
         ORDER BY m.match_start_time DESC;
-    `,
+            `,
 
     // 모든 활동량 평균 계산
     selectAllUserActivities: `
