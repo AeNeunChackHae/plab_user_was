@@ -151,3 +151,65 @@ export async function findFeedbackByStadiumId(stadiumId) {
       });
   }
   
+const insert_stadium = `
+INSERT INTO
+  PFB_STADIUM
+  (status_code, photo_path, stadium_name, full_address, contact_email, main_region
+  , sub_region, ground_type, parking_yn, width, height, notice, shower_yn, sell_drink_yn, lend_shoes_yn, toilet_yn)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
+/* 구장 INSERT (모든 인자값) */
+export async function insertStadium(data){
+  try {
+      return db.execute(insert_stadium, [
+        data.status_code,
+        data.photo_path,
+        data.stadium_name,
+        data.full_address,
+        data.contact_email,
+        data.main_region,
+        data.sub_region,
+        data.ground_type,
+        data.parking_yn,
+        data.width,
+        data.height,
+        data.notice,
+        data.shower_yn,
+        data.sell_drink_yn,
+        data.lend_shoes_yn,
+        data.toilet_yn,
+      ]).then(result => result[0].insertId);
+  } catch (error) {
+    console.log('----------insertStadium(data) error----------\n\n\n',error);
+    return null;
+  }
+}
+
+export async function insertStadiumConfig(paramList){
+  console.log('data / insertStadiumConfig(paramList) 인자값: \n', paramList);
+
+  const values = paramList.map(data =>
+    `(${data.stadium_id}, ${db.escape(data.match_type)}, ${db.escape(data.allow_gender)}, ${db.escape(data.level_criterion)}, ${db.escape(data.match_start_time)}, ${db.escape(data.match_end_time)})`
+  ).join(', ');
+
+  console.log('data / insertStadiumConfig(paramList) values: \n', values);
+
+  const insert_stadium_config = `
+  INSERT INTO PFB_STADIUM_CONFIG (
+      stadium_id,
+      match_type,
+      allow_gender,
+      level_criterion,
+      match_start_time,
+      match_end_time
+    ) VALUES ${values}
+`;
+
+  try {
+    return db.execute(insert_stadium_config).then(result => result[0].affectedRows);
+  } catch (error) {
+    console.log('----------insertStadiumConfig(data) error----------\n\n\n',error);
+    return null;
+  }
+}
