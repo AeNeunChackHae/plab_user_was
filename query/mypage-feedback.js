@@ -36,7 +36,7 @@ export const feedbackQuery = {
         ON
             b.black_user_id = mu.user_id
         WHERE
-            b.user_id = ? AND mu.match_id = ?;
+            b.user_id = ? AND mu.match_id = ? AND b.status_code = 0;
     `,
 
     // 블랙리스트 존재 여부 확인
