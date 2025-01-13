@@ -1,4 +1,5 @@
 import * as stadiumData from "../data/stadium.js";
+import moment from "moment";
 
 export async function photoPath(req, res) {
   // console.log('리퀘스트', req.body)
@@ -127,4 +128,78 @@ export async function getStadiumFeedback(req, res) {
     console.error("Error fetching feedback in controller:", error);
     res.status(500).json({ message: "리뷰 데이터를 가져오는 중 오류가 발생했습니다." });
   }
+}
+
+export async function form(req,res) {
+  const formData = req.body;
+  const awsUploadPath = req.awsUploadPath;
+
+  formData["photo_path"] = awsUploadPath;
+  formData["status_code"] = 0;
+  const insertResultId = await stadiumData.insertStadium(formData);
+
+  // 정상 등록
+  if(insertResultId) {
+    const config_data_arr = getConfigParameterArray(insertResultId, formData);
+
+    const affectedRows = await stadiumData.insertStadiumConfig(config_data_arr);
+
+    if(affectedRows > 0) res.json({status:true, url:'/'});
+    else res.json({status:false, error:'----- config insert affectedRows is 0 -----'});
+  }
+  // INSERT 쿼리 중 에러 발생
+  else res.json({status:false})
+}
+
+function getConfigParameterArray(stadium_id, formData){
+  let flag = false;
+  const config_keys = ['match_type_', 'allow_gender_', 'level_criterion_', 'match_start_time_'];
+  const config_data_arr = [];
+  let num = 0;
+  while(true){
+    const sql_param = { 'stadium_id':stadium_id }
+
+    // match_type_(num)이 formData에 존재하는지 확인
+    config_keys.forEach(item => {
+      let name_attribute = item+num // 'match_type_0' ... 'allow_gender_0' ... 
+      console.log('name_attribute: ', name_attribute);
+
+      // 존재하는 경우
+      if(name_attribute in formData){
+        
+        let columnName = item.slice(0, -1);
+        
+        if(columnName !== 'match_start_time'){
+          sql_param[columnName] = formData[name_attribute]  // sql_param에 'match_type : 1' 이런 key:value 모양으로 저장
+        }else{
+          const matchStartTime = moment().clone().set({
+            hour: parseInt(formData[name_attribute].split(':')[0]),
+            minute: parseInt(formData[name_attribute].split(':')[1]),
+            second: 0
+          });
+          const matchEndTime = matchStartTime.clone().add(2, 'hours');
+          const match_start_time = matchStartTime.format('YYYY-MM-DD HH:mm:ss');
+          const match_end_time = matchEndTime.format('YYYY-MM-DD HH:mm:ss');
+          sql_param['match_start_time'] = match_start_time;
+          sql_param['match_end_time'] = match_end_time;
+        }
+      
+      // 없는 경우
+      }else{
+        flag = true;
+      }
+    })
+
+    // num번 매치 설정이 없던 경우 (종료)
+    if(flag) break;
+
+    // num번 매치 설정이 있던 경우 (다음 매치 설정도 확인)
+    else {
+      config_data_arr.push(sql_param);
+      console.log('config_data_arr: ', config_data_arr);
+      num += 1;
+    }
+  }
+
+  return config_data_arr;
 }
