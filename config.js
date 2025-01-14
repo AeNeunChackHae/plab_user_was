@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-function getEnvValueConvertUnderbar(key) {
+function getEnvValueConvertUnderbar(key){
   let value = process.env[key];
-  return value.replace(/_/g, " ");
+  return value.replace(/_/g, ' ');
 }
 
 function getEnvValue(key) {
@@ -101,7 +101,7 @@ export const config = {
     region_busan_code: getEnvValue("REGION_BUSAN_CODE"),
     region_seoul_code: getEnvValue("REGION_SEOUL_CODE"),
   },
-
+  
   manager: {
     manager_status_code: getEnvValue("MANAGER_STATUS_CODE"),
   },
@@ -111,7 +111,7 @@ export const config = {
   admin_account: {
     account: getEnvValue("ADMIN_ACCOUNT"),
     password: getEnvValue("ADMIN_PASSWORD"),
-    email: getEnvValue("ADMIN_EMAIL"),
+    email: getEnvValue("ADMIN_EMAIL")
   },
   jwt: {
     user_secretKey: getEnvValue("USER_JWT_SECRET"),
@@ -123,6 +123,7 @@ export const config = {
     saltRounds: parseInt(getEnvValue("BCRYPT_SALT_ROUNDS")),
   },
   hosting_port: {
+    host_ip: getEnvValue('HOST_IP'),
     admin_full: parseInt(getEnvValue("ADMIN_FULL")),
     user_front: parseInt(getEnvValue("USER_FRONT")),
     user_back: parseInt(getEnvValue("USER_BACK")),
@@ -133,22 +134,20 @@ export const config = {
     admin_stadium_input_name: getEnvValue("ADMIN_STADIUM_REGIST"),
     was_upload_directory: getEnvValue("WAS_UPLOAD_DIRECTORY"),
   },
-  profile: {
+  profile:{
     basic_profile_path: getEnvValue("BASIC_PROFILE_PATH"),
   },
-  scheduler: {
-    match_status_change_cron: getEnvValueConvertUnderbar(
-      "MATCH_STATUS_CHANGE_CRON"
-    ),
-    match_regist_cron: getEnvValueConvertUnderbar("MATCH_REGIST_CRON"),
-    match_regist_delay_date: getEnvValue("MATCH_REGIST_DELAY_DATE"),
+  scheduler:{
+    match_status_change_cron:getEnvValueConvertUnderbar('MATCH_STATUS_CHANGE_CRON'),
+    match_regist_cron:getEnvValueConvertUnderbar('MATCH_REGIST_CRON'),
+    match_regist_delay_date:getEnvValue("MATCH_REGIST_DELAY_DATE"),
   },
   nodemailer: {
     email: getEnvValue("MANAGER_EMAIL_ACCOUNT"),
     password: getEnvValue("MANAGER_EMAIL_PASSWORD"),
   },
-  iamport: {
+  iamport:{
     api_key: getEnvValue("IAMPORT_API_KEY"), // 아임포트 API 키
     api_secret: getEnvValue("IAMPORT_API_SECRET"), // 아임포트 시크릿 키
-  },
+  }
 };
