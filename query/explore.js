@@ -14,7 +14,10 @@ export const getMatchesQuery = `
     WHERE 
         m.match_type = 0
         AND m.status_code IN (0, 1)
-        AND m.match_start_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL ? DAY)
+        AND (
+            (? = '1' AND m.match_start_time BETWEEN DATE_ADD(NOW(), INTERVAL 10 DAY) AND DATE_ADD(NOW(), INTERVAL 14 DAY))
+            OR (? != '1' AND m.match_start_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 14 DAY))
+        )
         AND (
             (? = '1') OR
             (? = '2' AND m.allow_gender = 2) OR
@@ -25,7 +28,6 @@ export const getMatchesQuery = `
     GROUP BY 
         m.id,
         m.match_start_time,
-        m.match_end_time,
         m.level_criterion,
         m.allow_gender,
         m.status_code,
