@@ -14,9 +14,12 @@ export const getMatchesQuery = `
     WHERE 
         m.match_type = 0
         AND m.status_code IN (0, 1)
-        AND m.match_start_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 14 DAY)
         AND (
-            (? = '1' AND m.allow_gender = 0) OR
+            (? = '1' AND m.match_start_time BETWEEN DATE_ADD(NOW(), INTERVAL 10 DAY) AND DATE_ADD(NOW(), INTERVAL 14 DAY))
+            OR (? != '1' AND m.match_start_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 14 DAY))
+        )
+        AND (
+            (? = '1') OR
             (? = '2' AND m.allow_gender = 2) OR
             (? = '3' AND m.allow_gender = 1) OR
             (? = '4' AND m.level_criterion = 1) OR
