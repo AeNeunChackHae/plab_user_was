@@ -11,15 +11,12 @@ export const fetchMatchesByType = async (matchCode) => {
     try {
         console.log(`SQL 쿼리 실행: 매치 코드(${matchCode})`);
 
-        // 올바른 파라미터 배열
         const params = [
-            matchCode,  // 첫 번째 ? → 날짜 범위 조건
-            matchCode,  // 두 번째 ? → 날짜 범위 조건
-            '1',        // 세 번째 ? → matchCode === '1'
-            '2',        // 네 번째 ? → matchCode === '2'
-            '3',        // 다섯 번째 ? → matchCode === '3'
-            '4',        // 여섯 번째 ? → matchCode === '4'
-            '5'         // 일곱 번째 ? → matchCode === '5'
+            matchCode,  
+            matchCode, 
+            matchCode,  
+            matchCode, 
+            matchCode  
         ];
         console.log('[디버그] 전달된 파라미터:', params);
 
@@ -49,4 +46,3 @@ export const fetchMatchesByType = async (matchCode) => {
         throw error;
     }
 };
-
