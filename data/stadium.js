@@ -108,48 +108,35 @@ export async function findStadiumById(stadium_id) {
 
 
 export async function findFeedbackByStadiumId(stadiumId) {
-    // console.log("SQL 실행 - stadiumId:", stadiumId);
-  
-    return db.execute(stadiumQuery.findFeedbackByStadiumId, [stadiumId])
-      .then(([rows]) => {
-        // console.log("SQL 결과:", rows);
-  
-        if (rows.length === 0) {
-          console.log("피드백 데이터 없음");
-          return { good: [], bad: [] };
-        }
-  
-        const goodFeedback = rows
-          .filter((row) => row.feedback_type === 0)
-          .map((row) => ({
-            feedback: config.stadium_match.positive_feedback_code[row.feedback] || "알 수 없음",
-            count: row.count,
-          }))
-          .sort((a, b) => b.count - a.count) // 내림차순 정렬
-          .slice(0, 3); // 상위 3개
-  
-        const badFeedback = rows
-          .filter((row) => row.feedback_type === 1)
-          .map((row) => ({
-            feedback: config.stadium_match.negative_feedback_code[row.feedback] || "알 수 없음",
-            count: row.count,
-          }))
-          .sort((a, b) => b.count - a.count) // 내림차순 정렬
-          .slice(0, 3); // 상위 3개
-  
-        // console.log("가공된 긍정 피드백:", goodFeedback);
-        // console.log("가공된 부정 피드백:", badFeedback);
-  
-        return {
-          good: goodFeedback.map((item) => item.feedback),
-          bad: badFeedback.map((item) => item.feedback),
-        };
-      })
-      .catch((error) => {
-        console.error("Error in findFeedbackByStadiumId:", error);
-        throw error;
-      });
+  try {
+    // 긍정 피드백 가져오기
+    const [positiveRows] = await db.execute(stadiumQuery.findPositiveFeedback, [stadiumId]);
+
+    // 부정 피드백 가져오기
+    const [negativeRows] = await db.execute(stadiumQuery.findNegativeFeedback, [stadiumId]);
+
+    // 긍정 피드백 데이터 정리
+    const goodFeedback = positiveRows.map((row) => ({
+      feedback: config.stadium_match.positive_feedback_code[row.feedback] || "알 수 없음",
+      count: row.count,
+    }));
+
+    // 부정 피드백 데이터 정리
+    const badFeedback = negativeRows.map((row) => ({
+      feedback: config.stadium_match.negative_feedback_code[row.feedback] || "알 수 없음",
+      count: row.count,
+    }));
+
+    // 결과 반환
+    return {
+      good: goodFeedback.map((item) => item.feedback),
+      bad: badFeedback.map((item) => item.feedback),
+    };
+  } catch (error) {
+    console.error("Error in findFeedbackByStadiumId:", error);
+    throw error;
   }
+}
   
 const insert_stadium = `
 INSERT INTO
