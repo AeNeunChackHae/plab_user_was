@@ -44,18 +44,36 @@ export const stadiumQuery ={
     WHERE 
       m.stadium_id = ?;
   `,
-  findFeedbackByStadiumId: `
-    SELECT 
-        m.feedback_type,
-        m.feedback,
-        COUNT(*) AS count
-    FROM 
-        PFB_STADIUM_FEEDBACK m
-    WHERE 
-        m.stadium_id = ?
-    GROUP BY 
-        m.feedback_type, m.feedback
-    ORDER BY 
-        m.feedback_type, count DESC
-    LIMIT 3`
+  findPositiveFeedback: `
+  SELECT 
+      m.feedback_type,
+      m.feedback,
+      COUNT(*) AS count
+  FROM 
+      PFB_STADIUM_FEEDBACK m
+  WHERE 
+      m.stadium_id = ?
+      AND m.feedback_type = 0
+  GROUP BY 
+      m.feedback_type, m.feedback
+  ORDER BY 
+      count DESC
+  LIMIT 3;
+`,
+findNegativeFeedback: `
+  SELECT 
+      m.feedback_type,
+      m.feedback,
+      COUNT(*) AS count
+  FROM 
+      PFB_STADIUM_FEEDBACK m
+  WHERE 
+      m.stadium_id = ?
+      AND m.feedback_type = 1
+  GROUP BY 
+      m.feedback_type, m.feedback
+  ORDER BY 
+      count DESC
+  LIMIT 3;
+`
 }
