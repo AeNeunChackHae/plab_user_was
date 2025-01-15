@@ -101,22 +101,42 @@ export async function getCompletedMatchesByUserId(userId) {
   }
 }
 
-// 소셜매치 신청 취소 (status_code를 1로 업데이트)
+// 소셜매치 신청 취소 (status_code를 1로 업데이트) 및 결제 상태 변경
 export async function cancelSocialMatchByUserId({ userId, matchId }) {
+  const connection = await db.getConnection(); // 트랜잭션을 위한 연결 생성
   try {
-    const [result] = await db.execute(mypageMyPlabMatchScheduleQueries.cancelSocialMatch,
+    await connection.beginTransaction(); // 트랜잭션 시작
+
+    // 소셜 매치 상태 변경
+    const [matchResult] = await connection.execute(
+      mypageMyPlabMatchScheduleQueries.cancelSocialMatch,
       [userId, matchId]
     );
 
-    if (result.affectedRows > 0) {
-      console.log(`매치 ID: ${matchId}, 사용자 ID: ${userId} - 매치가 취소되었습니다.`);
-      return { success: true, message: "매치가 성공적으로 취소되었습니다." };
-    } else {
-      console.warn(`매치 ID: ${matchId}, 사용자 ID: ${userId} - 취소할 매치를 찾을 수 없습니다.`);
-      return { success: false, message: "취소할 매치를 찾을 수 없습니다." };
+    if (matchResult.affectedRows === 0) {
+      throw new Error("취소할 매치를 찾을 수 없습니다.");
     }
+
+    // 결제 상태 변경
+    const [paymentResult] = await connection.execute(
+      mypageMyPlabMatchScheduleQueries.cancelPayment,
+      [userId, matchId]
+    );
+
+    if (paymentResult.affectedRows === 0) {
+      throw new Error("결제 상태를 업데이트하는 데 실패했습니다.");
+    }
+
+    await connection.commit(); // 트랜잭션 커밋
+    console.log(`매치 ID: ${matchId}, 사용자 ID: ${userId} - 매치 및 결제 상태가 성공적으로 취소되었습니다.`);
+
+    return { success: true, message: "매치와 결제 상태가 성공적으로 취소되었습니다." };
   } catch (error) {
+    await connection.rollback(); // 트랜잭션 롤백
     console.error("Database error during match cancellation:", error);
-    throw new Error("매치를 취소하는 중 오류가 발생했습니다.");
+    throw new Error("매치와 결제 상태를 취소하는 중 오류가 발생했습니다.");
+  } finally {
+    connection.release(); // 연결 해제
   }
 }
+
