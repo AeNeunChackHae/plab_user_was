@@ -103,6 +103,13 @@ export const mypageMyPlabMatchScheduleQueries = {
     WHERE user_id = ? AND match_id = ?;
     `,
 
+  // 매치 결제 상태 변경
+  cancelPayment: `
+    UPDATE PFB_PAYMENT
+    SET status_code = 1
+    WHERE user_id = ? AND match_id = ?;
+    `,
+
   // 팀 매치 취소 확인 (취소 불가 메시지 처리용)
   checkTeamMatch: `
     SELECT 
