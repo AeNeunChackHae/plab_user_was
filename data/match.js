@@ -18,6 +18,7 @@ export async function findDetailsById(match_id) {
       }
 
       const row = rows[0];
+      console.log(row.match_start_time)
 
       return {
         match_start_time: row.match_start_time,
@@ -29,6 +30,7 @@ export async function findDetailsById(match_id) {
         stadium_name: row.stadium_name,
         current_participants: row.current_participants, // 참가자 수 추가
       };
+      
     })
     .catch((err) => {
       console.error("Error in findDetailsById:", err);
