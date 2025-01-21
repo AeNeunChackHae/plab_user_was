@@ -5,7 +5,7 @@ export const matchQuery ={
         id AS match_id,
         stadium_id,
         match_type,
-        match_start_time,
+        DATE_FORMAT(match_start_time, '%Y-%m-%d %H:%i:%s') AS match_start_time,
         status_code
       FROM 
         PFB_MATCH 
@@ -14,7 +14,8 @@ export const matchQuery ={
     `,
     joinMatchAndStadium: `
       SELECT 
-          m.match_start_time, 
+          DATE_FORMAT(m.match_start_time, '%Y-%m-%d %H:%i:%s') AS 
+          match_start_time, 
           m.match_end_time,
           m.match_type, 
           m.stadium_id, 
@@ -111,7 +112,8 @@ export const matchQuery ={
           t.id AS team_id,
           t.team_name,
           t.emblem_path,
-          m.match_start_time
+          DATE_FORMAT(m.match_start_time, '%Y-%m-%d %H:%i:%s') AS 
+          match_start_time
       FROM 
           PFB_MATCH_TEAM mt
       JOIN 
