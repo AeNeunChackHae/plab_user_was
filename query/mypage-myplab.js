@@ -34,10 +34,10 @@ export const mypageMyPlabMatchScheduleQueries = {
       m.allow_gender,
       m.level_criterion,
       mu.status_code AS applicant_status,
-      CASE 
+      MAX(CASE 
         WHEN f.id IS NOT NULL THEN 1 -- 사용자가 해당 매치에서 타인에게 피드백을 남긴 경우
         ELSE 0 -- 사용자가 해당 매치에서 타인에게 피드백을 남기지 않은 경우
-      END AS feedback_given
+      END) AS feedback_given
     FROM 
       PFB_USER u
     JOIN 
@@ -52,7 +52,9 @@ export const mypageMyPlabMatchScheduleQueries = {
       u.id = ?
       AND mu.status_code IN (0, 2)
       AND m.status_code = 3
-    LIMIT 1;
+    GROUP BY 
+      m.id, m.match_start_time, m.match_end_time, s.stadium_name, 
+      m.match_type, m.allow_gender, m.level_criterion, mu.status_code;
     `,
 
   // 내가 취소한 매치 가져오기
